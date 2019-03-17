@@ -1,0 +1,12 @@
+<?php
+
+require_once 'api/DataApi.php';
+
+try {
+    $api = new DataApi();
+    echo $api->run();
+} catch (Exception $e) {
+    echo json_encode([
+			'error' => $e->getMessage()
+		]);
+}

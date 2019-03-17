@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>2 Страница</title>
+ </head>
+ <body>
+	<h2>Заголовок 2 страницы.</h2>
+	<hr>
+	<p>Это уже 2 страница со своим контентом.</p>
+
+
+	<h3>Проверяем работу добавленных скриптов</h3>
+
+	<h4>Напоминание о регистрации</h4>
+
+	<p>
+			<input class="button" value="Запустить" onclick="if (this.value=='Запустить') {Guest.start(3);this.value='Остановить'; } else { clearInterval(Guest.Int); Guest.no.call(Guest.D);  this.value='Запустить'; }" type="button">
+		</p>
+
+	<script type="text/javascript">
+		'use strict';
+		var GR_ID = 0;
+
+		window.Guest = {
+		 __proto__: null,
+		 delay: 5,
+		 message: 'Уважаемый Гость!<hr>Если вы зарегистрированы на сайте - войдите, пожалуйста, под своей учетной записью, если нет - пройдите процедуру <a href="#"><b>регистрации</b></a>.',
+
+		 no: function () {
+			this.parentNode.removeChild(this); Guest.D = null;
+		 },
+
+		 start: function (delay) {
+			delay = delay || this.delay;
+			if (GR_ID == 0) {
+			 this.Int = setInterval(Guest.init.bind(this), delay * 1000)
+			}
+		 },
+
+		 init: function () {
+			if (!!Guest.D) return;
+			Guest.D = document.createElement('div');
+			Guest.D.id = 'guest';
+			// Определяем любые стили блока
+			Guest.D.style.cssText = "width:250px; color:#000; background: linear-gradient(#ccc, #eee, #fff, #ddd) ; border:2px ridge #A3BAE9; position: fixed; top:20%;left:50%; padding:15px; line-height:1.2; letter-spacing: .1em; cursor:default; font-size:16px; z-index:10000";
+			Guest.D.title = "Закрыть";
+
+			// Определяем содержимое блока
+			Guest.D.innerHTML = this.message;
+			document.body.appendChild(Guest.D);
+
+			Guest.D.style.left = Math.random() * 60 + 10 + '%';
+			Guest.D.style.top = Math.random() * 60 + 10 + '%';
+
+			Guest.D.onclick = Guest.no;
+		 }
+		}
+		</script>
+
+ </body>
+</html>

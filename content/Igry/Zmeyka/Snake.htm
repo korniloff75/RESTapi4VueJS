@@ -1,0 +1,117 @@
+<style type="text/css" media="screen">
+	div.main {
+		display: inline-block;
+	}
+
+	div.main *{
+		transition: background-color .5s;
+	}
+
+	.main .line {
+		clear: both;
+		background-color: #fff;
+	}
+
+	.main .line > div {
+		width: 20px;
+		height: 20px;
+		float: left;
+		/* margin: 1px; */
+		/* color: #ddd; */
+		border: 1px solid #555;
+		border-radius: 4px;
+		background-color: transparent;
+	}
+
+	.main .line div.s {
+		background-color: #bbb;
+	}
+
+	.main .line div.f {
+		background-color: green;
+	}
+</style>
+
+<p>Этот код мною был позаимствован
+	<a href="http://habrahabr.ru/post/202476/" target="_blank" rel="nofollow">здесь</a>. Я его совсем немного доработал, добавив кроссброузерности и кое-какой функционал, и выкладываю для всеобщего
+	удовольствия. Спасибо автору.</p>
+<p>Игра управляется стрелками клавиатуры -
+	<b>&#x2191; &#x2192; &#x2193; &#x2190;</b>. Размер поля можно в теории задавать любым, по умолчанию сделал 15х15 (в оригинале
+	- 10х10).</p>
+
+<div class="center">
+	<div id="prim">
+		<div id="main" class="main"> </div>
+		<div>
+			Поле игры:
+			<input type="number" style="width: 53px;" value="15" id="width" class=button /> х
+			<input type="number" style="width: 53px;" value="15" id="height" class=button  />
+			<br />
+			<input type="button" onclick="GameSnake({width:$('#width' ).val(), height:$('#height' ).val()});" value="Играть" class=button
+			/>
+		</div>
+
+		<script type="text/javascript">
+			var GameSnake = function (sts) {
+				sts = Object.assign({
+					width: 10, height: 10, length: 5, current: 1, dx: 1, dy: 0, x: 0, y: 0, delay: 500, hasFood: false
+				}, sts);
+
+				var startSnake;
+
+				if (!!startSnake) return;
+				var fr = document.createDocumentFragment(), line = [];
+
+				// return console.log(sts.height);
+
+				for (var i = 0; i < sts.height; i++) {
+					line[i] = $('<div />', {class: 'line'}).appendTo(fr);
+					for (var j = 0; j < sts.width; j++) {
+						$(line[i]).append('<div class="' + i + "_" + j + '" />');
+					};
+				};
+
+				$('#main').html(fr);
+				// $('#main').append(fr);
+				document.documentElement.onkeydown = function (e) {
+					if (![37, 38, 39, 40].includes(e.keyCode)) return true;
+					sts.dx = (e.keyCode - 38) % 2, sts.dy = (e.keyCode - 39) % 2;
+					return false;
+				};
+
+				var timer = setInterval(function () {
+					startSnake = true;
+
+					sts.x = (sts.x + sts.dx) < 0 ? sts.width - 1 : (sts.x + sts.dx) % sts.width;
+					sts.y = (sts.y + sts.dy) < 0 ? sts.height - 1 : (sts.y + sts.dy) % sts.height;
+
+					var $newEl = $('.' + sts.y + '_' + sts.x).first();
+
+					if ($newEl.hasClass('s')) {
+						clearInterval(timer), alert('Game Over! Score: ' + sts.length);
+						startSnake = false;
+					};
+					if ($newEl.hasClass('f')) {
+						$newEl.removeClass('f'); sts.length++; sts.delay *= .9; sts.hasFood = false;
+					}
+					$newEl.addClass('s'), $newEl.attr('data-n', sts.current++);
+					for (var i = 0, min = Infinity, item, $items = $('.s'), len = $items.length; i < len && len > sts.length; i++)
+						if (+$items[i].getAttribute('data-n') < min) min = +$items[i].getAttribute('data-n'), item = $items[i];
+
+					if (!!item) item.classList.remove('s');
+
+					for (var fItem, fX, fY; !sts.hasFood; fX = Math.round(Math.random() * 10 % sts.width), fY = Math.round(Math.random() * 10 % sts.height))
+						if (!!fX && !!fY && !!$('.' + fY + '_' + fX)[0] && !$('.' + fY + '_' + fX)[0].classList.contains('s')) {
+							sts.hasFood = true; $('.' + fY + '_' + fX)[0].classList.add('f');
+						}
+
+				}, sts.delay);
+			};
+		</script>
+	</div>
+</div>
+
+
+<h5>HTML + Javascript код:</h5>
+
+<pre><code for="#prim" data-lib="jQuery"></code></pre>

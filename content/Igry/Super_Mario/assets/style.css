@@ -1,0 +1,86 @@
+.field {
+  display: flex;
+  width: 840px;
+  height: 720px;
+  margin: auto;
+  border: 5px solid #ffffff;
+  background: #53c71c url("SM_WP.jpg") center;
+	position: relative;
+	font-family: 'Open Sans';
+}
+
+.mario {
+  width: 30px;
+  height: 40px;
+  background: url("Mario.png") center;
+  background-size: contain;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  transition: 0.1s all;
+  display: none;
+}
+
+.princess {
+  width: 40px;
+  height: 45.6px;
+  background: url("princess.gif") center;
+  background-size: contain;
+  position: absolute;
+  bottom: 0px;
+  right: -5px;
+  display: none;
+}
+
+.modal {
+  margin: auto;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-start {
+  display: flex;
+  background: #42b0e1;
+  border: 3px solid #ffffff;
+  border-radius: 10px;
+  color: #ffffff;
+  padding: 40px;
+}
+
+.modal-start h2 {
+  font-size: 45px;
+  text-transform: uppercase;
+}
+
+.modal__btn {
+  margin-top: 30px;
+  padding: 10px 20px;
+  font-size: 25px;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  border-radius: 30px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  transition: 0.5s all;
+}
+
+.modal__btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal__btn:active {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.modal-finish {
+  display: flex;;
+  background: #42b0e1;
+  border: 3px solid #ffffff;
+  border-radius: 10px;
+  color: #ffffff;
+  padding: 20px;
+}
+
+.modal-finish img {
+  border-radius: 20px;
+}

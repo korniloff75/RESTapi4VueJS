@@ -1,0 +1,147 @@
+<p>Эту игру я написал полностью сам, от первой до последней строчки. От предыдущих игр её отличает то, что она написана исключительно в нативном javascript.</p>
+<p>Да, мне попадались публикации на Хабре, но я намеренно их не читал до написания кода, чтобы не сбиться по стилю. Ну, а после - мне мой код больше понравился! &#128526;</p>
+<p>Правила игры ничем не отличаются от классического сапёра. Всё то же самое: ЛКМ - ход, ПКМ - флажок. Поля вокруг "пустышек" открываются автоматически. Наслаждайтесь!</p>
+
+
+<h3>Правила игры</h3>
+
+<blockquote>
+	Идея игры такая: на игровом поле где-то спрятаны мины. Игрок кликает по клеткам, открывая их.
+	Если в клетке была мина, игрок проиграл. Если нет, то в клетке выводится цифра, показывающая общее число мин в соседних 8 клетках. Если игрок открыл все клетки, кроме заминированных, он победил.
+	Если игрок открывает клетку, рядом с которой нет мин, то все соседние клетки открываются автоматически (если на них тоже нет мин, то процесс продолжается).
+</blockquote>
+
+<h3>Настройки по умолчанию</h3>
+
+<p>По умолчанию скрипт генерирует игровое поле 10х10 ячеек и расставляет скрытым образом на нём 9 мин. Эти настройки можно изменить в аргументах основной инкапсуллирующей функции.</p>
+<p>Для начала новой партии после поражения - перезагрузите страницу.</p>
+
+
+<h2>Игровое поле</h2>
+
+<div id="prim">
+<style type="text/css" media="screen">
+#field {
+	width: 100%;
+	max-width: 400px;
+	max-height: 400px;
+	border: 2px solid;
+	border-collapse: collapse;
+	cursor:pointer;
+}
+#field td {
+	border: 1px solid;
+	text-align: center;
+	vertical-align: middle;
+}
+#field td::after {
+	content: '';
+	padding-top: 100%;
+	display: inline-block;
+}
+#field td:hover {
+	border: 1px solid;
+	background: #eff;
+}
+#field .fl {
+	color:red;
+	background-color: #ee7;
+}
+#field .fl::before {
+	content: '\\2691';
+}
+</style>
+<table id="field"></table>
+
+<script type="text/javascript">
+(function (width, height, bombs) {
+	"use strict";
+	var field= document.getElementById('field'), GO=0, flBG= '#ee7';
+	for (var i=0; i < height; i++) {
+		var tr= document.createElement('tr');
+		field.appendChild(tr);
+		for (var j=0; j < width; j++) {
+			var td= document.createElement('td');
+			td.id= j+','+i;
+			td.coord= [j,i];
+			td.style.width= parseInt(getComputedStyle(field).width)/width + 'px';
+			td.style.height= td.style.width;
+			tr.appendChild(td);
+		};
+	};
+	var cells= field.querySelectorAll('td');
+
+	//Расставляем бомбы
+	var sb=[];
+	for (var i=0; i < bombs; i++) {
+		setBomb ();
+	};
+
+	function setBomb () {
+		var pos=  Math.round(Math.random()*(width-1))+','+Math.round(Math.random()*(height-1));
+		if(sb.some(function(i) {return i===pos})) setBomb ();
+		else sb.push(pos);
+		document.getElementById(pos).bomb=1;
+	}
+
+	//Определяем количество бомб вокруг ячеек
+	[].forEach.call(cells, function(i) {
+		if(i.bomb) return;
+		var countBombs= 0;
+		around(i, function(nxt) {nxt.bomb && countBombs++;});
+		i.around= countBombs;
+	});
+
+	//Функция обхода окружающих ячеек
+	function around (cell, cb) {
+		[-1,0,1].forEach( function(dx) {
+			[-1,0,1].forEach( function(dy) {
+				var x= +cell.coord[0]+dx, y= +cell.coord[1]+dy, nxt= document.getElementById(x + ',' + y);
+				if(nxt && !nxt.style.background) cb(nxt);
+			})
+		} );
+	}
+
+	//Вывод числа бомб и рекурсивный обход пустышек
+	function addTxt (t) {
+		t.textContent= t.around;
+		t.style.background='#1a1';
+		if(!t.around && !t.bomb) {
+			around(t, function(nxt) {
+				addTxt(nxt);
+				if(!nxt.around) addTxt(nxt);
+			});
+		}
+	}
+
+	//Обработчики
+	field.oncontextmenu= function(e) {
+		if(GO || e.target.style.background) return;
+		e.target.classList.toggle('fl');
+		return false;
+	}
+
+	field.onclick= function(e) {
+		var target= e.target;
+		if(target.style.background || target.classList.contains('fl') || GO) return;
+		if(target.bomb) {
+			//Lose
+			GO=alert('Game OVER. You lose!');
+			sb.forEach(function(i) {
+				var b= document.getElementById(i);
+				b.innerHTML= '&#128163;';
+				b.style.background= 'red';
+				b.style.color= '#333';
+				b.style.borderRadius= parseInt(b.style.width)/2 + 'px';
+			})
+		}
+		else {
+			addTxt(target);
+		}
+	}
+})(10,10,9)
+</script>
+</div>
+
+<h4>Исходный код</h4>
+<pre><code for="#prim" noLib></code></pre>

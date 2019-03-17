@@ -1,0 +1,97 @@
+<p>Этот код мною был позаимствован <a href="http://habrahabr.ru/posXt/202556/" target="_blank" rel="nofollow">здесь</a>. Я его совсем немного доработал, добавив кроссброузерности и кое-какой функционал, и выкладываю для всеобщего удовольствия. Спасибо автору.</p>
+<p>Игра управляется перемещением курсора мыши в пределах игрового поля. <!-- Красный круг добавлен только для обозначения машины и препятствия не цепляет. Габариты машины определены размерами черного прямоугольника. --> Цвета препятствий при каждом новом запуске игры разные.</p>
+
+
+<div id="prim">  <!-- id="prim" -->
+	<div class="center">
+		<p id="timer" class="bold"></p>
+		<canvas id="canvas" style="background:#eee; margin:auto; max-width:100%;">Обновите браузер для корректного отображения игры</canvas>
+
+	</div>
+	<div class="center">
+		<input type="button" onclick="GameRaces('#canvas',650,400,33,0.05);" value="Играть" class=button />
+	</div>
+
+	<script type="text/javascript">
+	"use strict";
+
+	var sts= { //== Настройки
+		// Размеры болида
+		a:15, b:40,
+		otstup:10,
+		// Макс. размер матрицы с препятствиями
+		limitBlocks:70
+	};
+
+
+	function GameRaces (elid, width, height, speed, strength) {
+		if (!!GameRaces.inited) return;
+		var canvas= document.querySelector(elid),
+		ctx = canvas.getContext("2d"),
+		posX = 0, posY = height-sts.b-sts.otstup, blocks = [], tS= new Date(),
+		r= Math.random()*150, g= Math.random()*150, b= Math.random()*150;
+		GameRaces.inited= true;
+
+
+		canvas.width= width;
+		canvas.height= height;
+		ctx.fillStyle= '#000';
+
+		var bolid= new Image();
+		bolid.src= '/<?=\H::$Dir ?>img/car.png';
+		bolid.width= sts.a;
+		bolid.height= sts.b;
+		// bolid.hidden= 1;
+
+		var game = setInterval(function() {
+			var gameTime= (new Date().getTime() - tS.getTime())/1000;
+			function rndBlock () {
+				return [Math.random()*(width-10),-10];
+			}
+			document.querySelector('#timer').textContent= gameTime.toFixed(1) + ' sec.';
+			if( Math.random() < strength && blocks.length < sts.limitBlocks) blocks.push(rndBlock());
+
+			ctx.clearRect(0,0,width,height);
+			ctx.fillStyle = "black";
+			// ctx.fillRect(posX- sts.a/2, posY, sts.a, sts.b);
+			ctx.drawImage(bolid, posX- sts.a/2, posY, sts.a, sts.b);
+		//	ctx.strokeStyle = 'green';
+			ctx.fillStyle= 'red';
+ 			ctx.beginPath();
+			ctx.arc(posX, posY*1.01, sts.a/1.8, 0, Math.PI, true);
+			ctx.closePath();
+		//	ctx.stroke();
+			ctx.fill();
+			ctx.fillStyle= 'rgb(' + r+','+g+','+b + ')';
+			for(var i = 0; i < blocks.length; i++) {
+				ctx.fillRect(blocks[i][0],blocks[i][1],10,10);
+				if( blocks[i][1] > posY +3 && blocks[i][1] < height - sts.otstup -3 && Math.abs( posX- sts.a/2 - blocks[i][0]) < sts.a * .8 ) {
+					clearInterval(game);
+					var tI= new Date().getTime() - tS.getTime();
+					GameRaces.inited= false;
+					alert("Game over. You have " + Math.floor(1000 * strength) + " points.\nYou time - "+tI/1000+" sec");
+				};
+				if( blocks[i][1] > height - 5 ) {
+					blocks[i]= rndBlock();
+				} else {
+					blocks[i][1] += 5;
+				}
+			}
+			strength += 0.001;
+		},speed); // /game
+
+		canvas.onmousemove= function (e) {
+			var left= this.getBoundingClientRect().left;
+			posX = (e.pageX > (left+5)) ? ((e.pageX < (width+left-5)) ? e.pageX-left : width-5) : 5;
+
+		};
+	};
+	</script>
+</div>
+
+<h5>HTML + Javascript код:</h5>
+<pre><code for="#prim" noLib></code></pre>
+<div class="center">
+	<p>Мне удалось продержаться более 55с, а вам???</p>
+	<p><img src="/<?=\H::$Dir ?>img/Гонки max.jpg" alt="Рекорд в игре Гонки с препятствиями" /></p>
+</div>

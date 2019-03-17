@@ -1,0 +1,20 @@
+<p>Данная игра была мною доработана до рабочего состояния, а первоначальный код был взят из <a href="https://toster.ru/q/459916" rel=nofollow target="_blank">вопроса на Тостере</a> </p>
+
+<p>Конечно, функционал данной реализации и близко не дотягивает до одноимённого прототипа, но в её задачу входила именно доработка исходного кода.</p>
+
+<p>Как всегда я максимально инкапсуллировал код, поместив все переменные в один объект SM.</p>
+
+
+<link rel="stylesheet" type="text/css" href="/<?=\H::$Dir ?>assets/style.css">
+
+<div id="prim" class="field">
+
+	<div class="modal modal-start">
+		<h2>Начать игру</h2>
+		<img src="assets/SM.png" alt="start" width="400" height="187">
+		<button class="modal__btn modal-start__btn" onclick="SM.startGame();">Поехали!</button>
+	</div>
+</div>
+
+
+<script type="text/javascript" src="/<?=\H::$Dir ?>assets/gameSM.js"></script>
