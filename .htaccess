@@ -1,10 +1,5 @@
 Options +FollowSymLinks -Indexes
-IndexIgnore */*
 RewriteEngine on
-
-# Перенаправление с ДОМЕН на ДОМЕН/api
-# RewriteCond %{REQUEST_URI} ^/$
-# RewriteRule ^(.*)$ /api/$1 [R=301]
 
 # Все запросы к несуществующим файлам - на index
 RewriteCond %{REQUEST_FILENAME} !-f

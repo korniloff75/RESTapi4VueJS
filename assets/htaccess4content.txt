@@ -1,0 +1,20 @@
+# <IfModule mod_rewrite.c>
+# RewriteEngine on
+# ## Begin - ROUTING ...
+# RewriteBase /
+# # RewriteCond %{HTTP_HOST} (.*)
+# # RewriteCond %{REQUEST_URI} /$ [NC]
+# # #[NC]
+# # RewriteRule ^(.*)(/)$ $1 [L,R=301]
+
+# # ErrorDocument 404 /index.php
+
+# # Отправляем все запросы на базовый index.php
+# # за исключением запросов к *.js & *.css
+# # RewriteCond %{REQUEST_FILENAME} -d [OR]
+# RewriteCond %{REQUEST_FILENAME} -f [NC]
+# RewriteCond %{REQUEST_FILENAME} \.(php|htm)$ [NC]
+# # RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^ index.php [L]
+# ## End - ROUTING
+# </IfModule>

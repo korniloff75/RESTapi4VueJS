@@ -36,6 +36,7 @@ $currentInMenu = $contentObj->getFromMap();
 	?>
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title><?=$currentInMenu['data']['title']?></title>
+	<link rel="stylesheet" href="/templates/core.css">
 </head>
 
 <body>

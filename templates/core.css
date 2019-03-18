@@ -1,0 +1,167 @@
+/*
+MAPS компиллятор не тянет
+*/
+@font-face {
+  font-family: "Source Sans Pro";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/fonts/Source Sans Pro/SourceSansPro-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Source Sans Pro";
+  font-style: normal;
+  font-weight: bold;
+  src: url("/assets/fonts/Source Sans Pro/SourceSansPro-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Source Sans Pro";
+  font-style: italic;
+  font-weight: normal;
+  src: url("/assets/fonts/Source Sans Pro/SourceSansPro-Italic.ttf") format("truetype");
+}
+/* Start FLEX */
+/* These are the conditional mixins for the different syntax for IE10 Flexbox*/
+/* End FLEX */
+/* @group matrix() */
+/* @end */
+/* Box Group
+========================== */
+/* @group box-shadow() */
+/* @end */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #262729;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+* {
+  /* ( content-box | border-box | inherit ) */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: transparent;
+  -webkit-transition: all 0.5s 0.2s cubic-bezier(0.075, 0.82, 0.165, 1)   ;
+  -moz-transition: all 0.5s 0.2s cubic-bezier(0.075, 0.82, 0.165, 1)   ;
+  -o-transition: all 0.5s 0.2s cubic-bezier(0.075, 0.82, 0.165, 1)   ;
+  transition: all 0.5s 0.2s cubic-bezier(0.075, 0.82, 0.165, 1)   ;
+}
+.flex,
+[class|="flex"] {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: -moz-flex;
+  display: flex;
+}
+.flex.inline,
+[class|="flex"][class*="-inline"] {
+  display: -webkit-inline-flex;
+  display: -ms-inline-flex;
+  display: -moz-inline-flex;
+  display: inline-flex;
+}
+.flex.wrap,
+[class|="flex"][class*="wrap"] {
+  -ms-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+[class|="flex"][class*="-100"] {
+  -webkit-flex-basis: 100%;
+  -ms-flex-basis: 100%;
+  flex-basis: 100%;
+}
+[class|="flex"][class*="-column"] {
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+[class|="flex"][class*="-justify"][class*="-around"] {
+  -ms-flex-pack: distribute;
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+}
+[class|="flex"][class*="-justify"][class*="-between"] {
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+[class|="flex"].center {
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+/* /flex */
+.hidden,
+.hidden * {
+  color: #d48 !important;
+}
+.core {
+  display: block;
+  min-height: 30px;
+  border-style: solid;
+  border-width: 3px 5px 3px 15px;
+  padding: 5px 10px;
+  font-size: 16px;
+  line-height: 1.2;
+  margin: 5px 0;
+  font-family: arial, sans-serif;
+}
+.core.strong {
+  background: #fcc;
+  border-color: #900;
+  color: #311;
+}
+.core.warning {
+  background: #fc0 !important;
+  color: #000 !important;
+  border-color: #000 !important;
+}
+.core.message {
+  background: #080 !important;
+  color: #fff !important;
+  text-align: center !important;
+  border-color: #fff !important;
+}
+.core.info {
+  color: #131 !important;
+  border-color: #484 !important;
+  background: #edf9ed !important;
+}
+.core.note {
+  color: #123 !important;
+  border-color: #468 !important;
+  background: #eaf0f9 !important;
+}
+.core.bar {
+  border-color: #050;
+  font-size: 1em;
+  font-weight: 400;
+  color: #def;
+  background: #172;
+}
+.core.bar a {
+  color: #fd5;
+}
+.core.bar::before {
+  content: "ADM ";
+  color: #900;
+  background: #def;
+}
+.core.editpanel {
+  line-height: 2.2;
+  background: #195;
+  position: fixed;
+  top: 0;
+}
+.core.editpanel i,
+.core.editpanel button {
+  font-size: 1.2em;
+  margin: 0 0.1em;
+}
+.core a {
+  color: #159;
+}
+.core a:hover {
+  color: #5599dd;
+}

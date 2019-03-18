@@ -6,6 +6,7 @@ node_modules
 *.*_
 *.xml
 *.gz
+*/ContentMap.json*
 
 # local env files
 .env.local

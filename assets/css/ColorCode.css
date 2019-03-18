@@ -1,0 +1,59 @@
+code .tag, code .num {color:#905;}
+code .attrs {color: #177;}
+code .ops {color: #aa0; font-weight: 600;}
+code .funcs {color: #217; font-weight: 600;}
+code .str {color: #07a;}
+
+code .comments {color: #999; font-style: italic;}
+
+div.code {border: 1px ridge #bbbbbb;}
+
+pre {
+	white-space: pre-wrap;word-break: normal; background-color: #eee;
+/*
+	border: 1px ridge #bbbbbb;
+	border-right: none;
+*/
+}
+
+code {
+	color: #d33;
+	padding: 3px;
+	background: #eee;
+	border: 1px dotted #999;
+	margin: 1px 5px;
+	display: inline-block;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	max-width: 100%;
+}
+
+pre > code, pre span.line-numbers-rows {
+	display: table-cell;
+	font-size: .9em !important;
+}
+
+pre > code {
+	border: 1px solid #bbbbbb;
+	border-left: none;
+	padding-left: 10px;
+	white-space: pre;
+	color: #333;
+	width: 100%;
+}
+pre code * {white-space:nowrap;}
+
+pre span.line-numbers-rows {
+	background: #ddd none repeat;
+	border-radius: 100px;
+	box-shadow: 2px 1px 3px 0 #999;
+	padding: 1em 0;
+}
+
+pre .line-numbers-rows > span  {
+  color: #777;
+  display: block;
+  text-align: right;
+  padding: 0 0.5em 0 0.5em;
+  margin: 0;
+}
