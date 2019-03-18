@@ -6,17 +6,32 @@ require_once '../commonStart.php';
 # Класс для работы с JSON-базами
 require_once BASE_DIR . '/classes/DbJSON.php';
 # Класс для работы с папкой контента
-require_once BASE_DIR . '/classes/ParseContent.php';
-// require_once 'classes/IteratorFilter.php';
-# Класс для работы с API
-require_once 'ContentMap.php';
+// require_once BASE_DIR . '/classes/ParseContent.php';
+
+
+# Разбираем параметры, разделённые слешем
+@list($enterPoint, $apiName, $id) = explode('/', trim($_SERVER['REQUEST_URI'],'\\/'));
+$apiName = ucfirst($apiName);
 
 ob_start();
 
-
 try {
 	// echo '<pre>';
-	$api = new DataApi();
+	# Проверяем соответствие
+	if(
+		$enterPoint !== 'api' ||
+		!file_exists("$apiName.php")
+	)
+	{
+		throw new RuntimeException('Undefined request. API Not Found', 404);
+	}
+
+	unset($enterPoint);
+
+	# Класс для работы с API
+	require_once "$apiName.php";
+
+	$api = new $apiName($id);
 	// echo '</pre>';
 
 } catch (Exception $e) {
@@ -24,6 +39,3 @@ try {
 		'error' => $e->getMessage()
 	]);
 }
-
-exit(profile('base'));
-

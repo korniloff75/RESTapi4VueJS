@@ -18,25 +18,27 @@ abstract class Api
 			$requestUri = [],
     	$requestParams = [];
 
-    protected $action = ''; //Название метод для выполнения
+    protected $action = ''; //Название метода для выполнения
 
 
-    public function __construct() {
+    public function __construct($id = null) {
 
-    	 //Массив GET параметров разделенных слешем
-    	 $this->requestUri = explode('/', trim($_SERVER['REQUEST_URI'],'\\/'));
-    	 $this->requestParams = $_REQUEST;
+    	//Массив GET параметров разделенных слешем
+    	$this->requestUri = explode('/', trim($_SERVER['REQUEST_URI'],'\\/'));
+			$this->requestParams = $_REQUEST;
 
-    	 //Определение метода запроса
-    	 $this->method = $_SERVER['REQUEST_METHOD'];
-    	 if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-    	 if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
+			$this->id = $id;
+
+			# Определение метода запроса
+			$this->method = $_SERVER['REQUEST_METHOD'];
+			if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
+				if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
 					$this->method = 'DELETE';
-    	 	} elseif ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
-    	 		$this->method = 'PUT';
-    	 	} else {
-    	 		throw new Exception("Unexpected Header");
-    	 	}
+				} elseif ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
+					$this->method = 'PUT';
+				} else {
+					throw new Exception("Unexpected Header");
+				}
 			}
 
 			echo $this->run();
@@ -52,20 +54,13 @@ abstract class Api
 
 
     public function run() {
-			//Первые 2 элемента массива URI должны быть 	"api" и название таблицы
-			$this->apiName = ucfirst($this->apiName);
-			// var_dump($this->apiName);
-
-			if(array_shift($this->requestUri) !== 'api' || 	ucfirst(array_shift($this->requestUri)) !== 	$this->apiName) {
-    	     throw new RuntimeException('Undefined request. API Not Found', 404);
-			}
-
-			#
+			# Открываем базу
 			$this->dataObj = new \DbJSON($this->dbPath . 	$this->apiName . '.json');
-    	 //Определение действия для обработки
-    	 $this->action = $this->getAction();
+			// print_r($this->dataObj);
 
-    	 //Если метод(действие) определен в дочернем 	классе API
+    	# Определение действия для обработки
+    	$this->action = $this->getAction();
+
     	if (method_exists($this, $this->action)) {
     		return $this->{$this->action}();
     	} else {
@@ -83,7 +78,7 @@ abstract class Api
 			if($status == 200) {
 				$this->headers[] = $header;
 			} else {
-				$this->headers = $header;
+				$this->headers = [$header];
 			}
 
 			return is_string($data) ? $data : \DbJSON::toJSON($data);
@@ -99,30 +94,30 @@ abstract class Api
         return $status[$code] ?? $status[500];
     }
 
-    protected function getAction()
-    {
-        $method = $this->method;
-        switch ($method) {
-            case 'GET':
-            	if($this->requestUri){
-            	    return 'viewAction';
-            	} else {
-            	    return 'indexAction';
-            	}
-            	break;
-            case 'POST':
-                return 'createAction';
-                break;
-            case 'PUT':
-                return 'updateAction';
-                break;
-            case 'DELETE':
-                return 'deleteAction';
-                break;
-            default:
-                return null;
-        }
-    }
+		protected function getAction()
+		{
+			$method = $this->method;
+			switch ($method) {
+				case 'GET':
+					if($this->id) {
+					return 'viewAction';
+				} else {
+					return 'indexAction';
+				}
+				break;
+				case 'POST':
+				    return 'createAction';
+				    break;
+				case 'PUT':
+				    return 'updateAction';
+				    break;
+				case 'DELETE':
+				    return 'deleteAction';
+				    break;
+				default:
+				    return null;
+			}
+		}
 
     abstract protected function indexAction();
     abstract protected function viewAction();
