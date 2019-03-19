@@ -11,17 +11,20 @@ class ContentJson extends Api
 	public function __construct($id = null)
 	{
 		$cache = new Caching;
+
+		$this->dataObj = new \DbJSON;
+
+		$this->dataObj->db = [
+			'menu' => $cache->get('menu.htm', function() {
+				return (new ParseContent('../content/'))->createMenu();
+			}),
+
+			'main' => !empty($_REQUEST['page']) ? file_get_contents(CONTENT_DIR . ($_REQUEST['page'])) : '' // Нужно определить контент по умолчанию
+		];
+
 		parent::__construct($id);
 
-		$allData = $this->dataObj->get();
-
-		if(!count($allData)) {
-			$this->dataObj->set([
-				'menu' => $cache->get('menu.htm', function() {
-					return (new ParseContent('../content/'))->createMenu();
-				})
-			]);
-		}
+			// print_r($this->dataObj->db);
 	}
 
 	/**
@@ -33,6 +36,7 @@ class ContentJson extends Api
 	public function indexAction()
 	:string
 	{
+		// print_r($this->dataObj->get());
 		return $this->response(
 			$this->dataObj->get(),
 			200
@@ -47,6 +51,7 @@ class ContentJson extends Api
 	 */
 	public function viewAction()
 	{
+		// print_r($this->id . "\n");
 		return $this->id && ($data = $this->dataObj->get($this->id))
 		? $this->response($data, 200)
 		: $this->response('Data not found', 404);

@@ -4,7 +4,9 @@ require_once '../commonStart.php';
 
 
 # Разбираем параметры, разделённые слешем
-@list($enterPoint, $apiName, $id) = explode('/', trim($_SERVER['REQUEST_URI'],'\\/'));
+$requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];
+// print_r($requestUri . '<br>');
+@list($enterPoint, $apiName, $id) = explode('/', trim($requestUri,'\\/'));
 $apiName = ucfirst($apiName);
 
 ob_start();
@@ -21,7 +23,7 @@ try {
 		throw new RuntimeException('Undefined request. API Not Found', 404);
 	}
 
-	unset($enterPoint);
+	unset($enterPoint, $requestUri);
 
 	# Класс для работы с API
 	require_once "$apiName.php";

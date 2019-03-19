@@ -3,6 +3,7 @@ if (version_compare(PHP_VERSION, '7.0', '<') ) die("<h3>Обновите вер�
 
 define('DEV', true);
 define('BASE_DIR', __DIR__);
+define('CONTENT_DIR', BASE_DIR . '/content/');
 
 if(\DEV)
 {

@@ -9,7 +9,7 @@ class DbJSON {
 
 	public function __construct(string $path=null)
 	{
-		if(!strlen($path)) throw new LogicException("Отсутствует \$path", 1);
+		// if(!strlen($path)) throw new LogicException("Отсутствует \$path", 1);
 
 		$this->path = (strpos($path, '/') === 0 ? BASE_DIR : '') . $path;
 		$this->json = @file_get_contents($this->path);

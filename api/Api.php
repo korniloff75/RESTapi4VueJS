@@ -17,15 +17,12 @@ abstract class Api
 
 	public
 		$apiName = '', // Имя дочернего класса
-		$requestUri = [],
    	$requestParams = [];
 
 
 	public function __construct($id = null)
 	{
-   	$this->requestUri = explode('/', trim($_SERVER['REQUEST_URI'],'\\/'));
 		$this->requestParams = $_REQUEST;
-
 		$this->id = $id;
 
 		# Определение метода запроса
@@ -55,7 +52,7 @@ abstract class Api
 	public function run()
 	{
 		# Открываем базу
-		$this->dataObj = new \DbJSON($this->dbPath . 	$this->apiName . '.json');
+		$this->dataObj = $this->dataObj ?? new \DbJSON($this->dbPath . 	$this->apiName . '.json');
 		// print_r($this->dataObj);
 
    	# Определение действия для обработки
@@ -64,7 +61,7 @@ abstract class Api
    	if (method_exists($this, $this->action)) {
    		return $this->{$this->action}();
    	} else {
-   		throw new RuntimeException('Invalid Method', 405);
+   		throw new RuntimeException("Invalid Method {$this->action}" , 405);
 		}
 
   } // run
