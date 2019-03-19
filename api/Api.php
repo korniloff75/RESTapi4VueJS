@@ -97,7 +97,7 @@ abstract class Api
 		];
  	    return $status[$code] ?? $status[500];
 	}
-	 
+
 	protected function getAction()
 	{
 		$method = $this->method;

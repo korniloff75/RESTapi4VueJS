@@ -7,7 +7,7 @@ ob_start();
 
 $contentObj = new ParseContent('content/');
 # Caching
-$cach = new Caching;
+$cache = new Caching;
 $currentInMenu = $contentObj->getFromMap();
 
 # Формируем простой вывод для ПС
@@ -36,7 +36,7 @@ $currentInMenu = $contentObj->getFromMap();
 <body>
 
 <?php
-echo "<nav>" . $cach->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
+echo "<nav>" . $cache->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
 echo "<main>";
 echo "<h1>{$currentInMenu['data']['title']}</h1>";
 if(file_exists(\H::$File)) require_once(\H::$File);

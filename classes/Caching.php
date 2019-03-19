@@ -5,16 +5,23 @@ class Caching {
 
 	public function __construct()
 	{
-		# Create cach folder
-		if(!file_exists(BASE_DIR . '/cach')) mkdir(BASE_DIR . '/cach');
+		# Create cache folder
+		if(!file_exists(BASE_DIR . '/cache')) mkdir(BASE_DIR . '/cache');
 	}
 
 	private function fixPath($path)
 	{
-		$beginPath = BASE_DIR . '/cach/';
+		$beginPath = BASE_DIR . '/cache/';
 		return stripos($path, $beginPath) === 0 ? $path : $beginPath . $path;
 	}
 
+	/**
+	 * @path - путь к файлу кэша, относительно cache/
+	 * optional @callback - string (func name | json) | function
+	 * Проверит наличие файла $this->fixPath(@path)
+	 * Если нет - создат с содержимым, возвращённым @callback
+	 * Вернёт его содержимое
+	 */
 	public function get($path, $callback=null)
 	{
 		$path = $this->fixPath($path);
@@ -29,6 +36,12 @@ class Caching {
 	}
 
 
+	/**
+	 * @path - путь к файлу кэша, относительно cache/
+	 * @callback - string (func name | json) | function
+	 * Создаст или перезапишет файл $this->fixPath(@path)
+	 * результатом, возвращённым @callback
+	 */
 	public function set($path, $callback)
 	{
 		$path = $this->fixPath($path);
