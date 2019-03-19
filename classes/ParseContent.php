@@ -4,7 +4,8 @@ class ParseContent
 	public
 		$allInDirFilterIterator,
 		// $arr, # array with $allInDirFilterIterator
-		$ContentMap=[];
+		$ContentMap=[],
+		$cach;
 
 	protected
 		$path,
@@ -21,6 +22,7 @@ class ParseContent
 
 		# Open map's file
 		$ContentObj = new DbJSON('/db/ContentMap.json');
+
 		# Обновляем базу при заходе через корневой index.php
 		if(\DEV && realpath('') === realpath(BASE_DIR)) {
 			$ContentObj->replace($this->toArray());
@@ -65,7 +67,7 @@ class ParseContent
 				}
 
 				# Выкидываем папки $this->serveDirs
-				elseif(
+				if(
 					$cur->isDir()
 					&& !in_array($cur->getFilename(), $this->serveDirs)
 				) {
@@ -95,17 +97,13 @@ class ParseContent
 
 		// print_r("\n===\nallFilterFoldersIterator\n===\n");
 		// print_r("\n" . $this->allInDirFilterIterator->__toString());
-		// var_dump(
-		// 	$this->allInDirFilterIterator,
-		// 	iterator_count($this->allInDirFilterIterator));
-		// print_r("\n===\n/ allInDirFilterIterator\n===\n");
 
 	} // run
 
 
 	/**
 	 * Получаем данные из $this->ContentMap
-	 * @url - путь к папке страницы
+	 * optional @url - путь к папке страницы относительно папки content/
 	 */
 	public function getFromMap($url=null)
 	{
@@ -115,30 +113,6 @@ class ParseContent
 		foreach($path as $i) {
 		 $ev .= "['children']['$i']";
 		}
-
-		eval($ev . ';');
-
-		$cur['data'] = array_merge([
-			'title' => basename(dirname($cur['path'][0])),
-			'seo' => []
-		], ($cur['data'] ?? []));
-
-		if(!empty($cur['data']['seo'][1])) {
-			$cur['data']['seo'][1] = preg_replace("#,\s+?#", ',', $cur['data']['seo'][1]);
-		}
-
-		return $cur;
-	}
-
-
-	# Получаем данные для текущей страницы
-	public function current()
-	{
-		 $path = explode('/', dirname(trim($_SERVER['REQUEST_URI'],'\\/')));
-		 $ev = '$cur = $this->ContentMap';
-		 foreach($path as $i) {
-			 $ev .= "['children']['$i']";
-		 }
 
 		eval($ev . ';');
 
@@ -208,10 +182,11 @@ class ParseContent
 		// global $nav;
 		$map = $map ?? $this->ContentMap;
 		// var_dump($map);
-		$nav .= '<ul>';
+
 
 		if(!empty($map['children']))
 		{
+			$nav .= "<ul>\n";
 			foreach($map['children'] as $child) {
 				$data = $child['data'] ?? [];
 				// var_dump($child);
@@ -220,16 +195,17 @@ class ParseContent
 						// var_dump($path);
 						$path = str_ireplace('content' . DIRECTORY_SEPARATOR, '', $path);
 
-						$nav .= "<li><a href='/$path'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>";
+						$nav .= "<li><a href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 					}
 				}
 
 				$nav = $this->createMenu($child, $nav);
 
 			}
+			$nav .= "</ul>\n";
 		}
 
-		return "{$nav}\n</ul>";
+		return $nav;
 	}
 
 

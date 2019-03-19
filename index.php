@@ -1,24 +1,18 @@
 <?php
-# Настройки display_errors etc...
+# Подключение классов, настройки display_errors etc...
 require_once 'commonStart.php';
-# FIX pathes
-require_once 'classes/Path.php';
-# Helper singleton
-require_once 'classes/_Helper.php';
-# Класс для работы с JSON-базами
-require_once 'classes/DbJSON.php';
-# Класс для работы с папкой контента
-require_once 'classes/ParseContent.php';
-
 
 ob_start();
 ######
 
 $contentObj = new ParseContent('content/');
+# Caching
+$cach = new Caching;
 $currentInMenu = $contentObj->getFromMap();
 
 # Формируем простой вывод для ПС
 ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -42,7 +36,7 @@ $currentInMenu = $contentObj->getFromMap();
 <body>
 
 <?php
-echo "<nav>" . $contentObj->createMenu() . "</nav>\n";
+echo "<nav>" . $cach->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
 echo "<main>";
 echo "<h1>{$currentInMenu['data']['title']}</h1>";
 if(file_exists(\H::$File)) require_once(\H::$File);
