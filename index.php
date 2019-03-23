@@ -1,9 +1,25 @@
 <?php
-# Подключение классов, настройки display_errors etc...
-require_once 'commonStart.php';
 
 ob_start();
+# Разбираем параметры, разделённые слешем
+$requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];
+$requestUri = explode('/', trim($requestUri,'\\/'));
+
+// var_dump($requestUri, (bool) $requestUri);
+
 ######
+# FrontEnd
+
+// require_once FRONT_DIR . '/index.php';
+if(!array_shift($requestUri)) {
+
+
+	// exit;
+} // FrontEnd
+######
+
+# Подключение классов, настройки display_errors etc...
+require_once 'commonStart.php';
 
 $contentObj = new ParseContent('content/');
 # Caching
@@ -31,17 +47,31 @@ $currentInMenu = $contentObj->getFromMap();
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title><?=$currentInMenu['data']['title']?></title>
 	<link rel="stylesheet" href="/templates/core.css">
+
+	<script src="/<?=FRONT_DIR?>/js/vue.js"></script>
+
+	<script src="/<?=FRONT_DIR?>/js/axios/0.18.0/axios.min.js"></script>
+	<link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-
+<header></header>
+<div id="app">
 <?php
-echo "<nav>" . $cache->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
-echo "<main>";
+echo "<nav is=\"menu-items\">" . $cache->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
+echo "<main is=\"main-content\">";
 echo "<h1>{$currentInMenu['data']['title']}</h1>";
-if(file_exists(\H::$File)) require_once(\H::$File);
+foreach($currentInMenu['path'] as $path) {
+	if(file_exists($path)) require_once($path);
+}
+
 echo "</main>";
 ?>
+</div> <!-- #app -->
+<script src="/<?=FRONT_DIR?>/js/App.js"></script>
+
+<footer>
+</footer>
 
 </body>
 </html>
@@ -53,7 +83,7 @@ $response = ob_get_clean();
 header('Content-type: text/html; charset=utf-8');
 echo $response;
 
-exit(profile('base'));
+exit(\DEV? profile('base'): null);
 #####
 
 echo '<pre>';

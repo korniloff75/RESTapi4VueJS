@@ -108,7 +108,17 @@ class ParseContent
 	public function getFromMap($url=null)
 	{
 		$url = $url ?? $_SERVER['REQUEST_URI'];
+		if($url === '/') {
+			$this->allInDirFilterIterator->rewind();
+			// var_dump($this->allInDirFilterIterator->current()->isFile(), $this->allInDirFilterIterator->current()->getPathname());
+
+			$url = \Path::fixSlashes($this->allInDirFilterIterator->current()->getPathname());
+			$url = str_replace(CONTENT_DIRNAME, '', $url);
+		}
 		$path = explode('/', dirname(trim($url,'\\/')));
+		var_dump($url, $path);
+		// if(!$path[0]) $path = [];
+		// $path = $this->allInDirFilterIterator
 		$ev = '$cur = $this->ContentMap';
 		foreach($path as $i) {
 		 $ev .= "['children']['$i']";
@@ -195,7 +205,7 @@ class ParseContent
 						// var_dump($path);
 						$path = str_ireplace('content' . DIRECTORY_SEPARATOR, '', $path);
 
-						$nav .= "<li><a href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
+						$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 					}
 				}
 

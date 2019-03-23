@@ -9,7 +9,10 @@ abstract class Api
 		$headers = [
 			"Access-Control-Allow-Orgin: *",
 			"Access-Control-Allow-Methods: *",
-			"Content-Type: application/json"
+			# Запрещён в CORS
+			// "Content-Type: application/json",
+			"Content-Type: text/plain",
+
 		],
 		$method = '', //GET|POST|PUT|DELETE
 		$id = null,
@@ -39,12 +42,12 @@ abstract class Api
 
 		echo $this->run();
 
-		$content = ob_get_clean();
+		$response = ob_get_clean();
 
 		foreach($this->headers as $h) {
 			header($h);
 		}
-		echo $content;
+		echo $response;
 
   }
 
@@ -75,11 +78,7 @@ abstract class Api
 	:string
 	{
 		$header = "HTTP/1.1 " . $status . " " . $this->requestStatus($status);
-		if($status == 200) {
-			$this->headers[] = $header;
-		} else {
-			$this->headers = [$header];
-		}
+		$this->headers[] = $header;
 
 		return is_string($data) ? $data : \DbJSON::toJSON($data);
   }
