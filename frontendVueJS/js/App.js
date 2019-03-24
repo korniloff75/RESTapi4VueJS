@@ -34,15 +34,18 @@ var Mixins = {
 
 				console.log('\nresponse.data = ',
 				typeof response.data,
-				response.data
+				// response.data
 					// '\n_this.$root = ', _this.$root, (_this.$root === _this)
 				);
-				_thisComp.$root.response.main = '<h1>' + document.title + '</h1>\n' + _thisComp.$root.doc.documentElement.innerHTML;
 
-				/* _thisComp.$root.$nextTick(function() {
+				// Делим документ на скрипты и html
+				var page = _thisComp.parseScripts(_thisComp.$root.doc);
 
-					_thisComp.evalScripts();
-				}); */
+				_thisComp.$root.response.main = '<h1>' + document.title + '</h1>\n' + page.html;
+
+				_thisComp.$root.$nextTick(function() {
+					_thisComp.evalScripts(page.scripts);
+				});
 
 				/* history.pushState({
 					title: document.title,
@@ -94,21 +97,47 @@ var Mixins = {
 			});
 		}, */
 
-		evalScripts() {
-			console.log(
-				'evalScripts / $nextTick\n',
-				this.doc.querySelectorAll('script')
-			);
+
+		/**
+		 * Разбираем скрипты из @elem
+		 * на подключаемые и исполняемые
+		 *
+		 * @param {document} elem
+		 */
+		parseScripts(elem) {
+			var out = {scripts: []};
 			[].forEach.call(
-			this.doc.querySelectorAll('script'),
+			elem.querySelectorAll('script'),
 			i => {
-				console.log(i);
+				out.scripts.push(i);
+				i.remove();
+			});
+
+			out['html'] = elem.documentElement.innerHTML;
+			return out;
+		},
+
+		/**
+		 *
+		 * @param {Array} scripts
+		 */
+		evalScripts(scripts) {
+			/* console.log(
+				'\nevalScripts / $nextTick\n',
+				elem.querySelectorAll('script')
+			); */
+
+			scripts.forEach(i => {
 				if(i.src) {
 					var s = document.createElement('script');
 					s.src = i.src;
 					i.remove();
 					document.head.appendChild(s);
-				} else eval(i.innerHTML);
+				} else {
+					// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
+					eval(i.innerHTML);
+				}
+
 			});
 		},
 

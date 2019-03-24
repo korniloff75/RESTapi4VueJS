@@ -34,11 +34,13 @@ class ContentJson extends Api
 			]
 		];
 
+		ob_start();
 		foreach($this->currentItem['path'] as $path) {
 			$path = BASE_DIR . "/$path";
-			if(file_exists($path)) $this->dataObj->db['main']['body'] .= file_get_contents($path);
+			include_once($path);
 			// print_r($path);
 		}
+		$this->dataObj->db['main']['body'] = ob_get_clean();
 
 		// print_r($this->dataObj->db['main']);
 
