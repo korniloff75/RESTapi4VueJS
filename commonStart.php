@@ -23,8 +23,8 @@ if(\DEV)
 }
 ini_set('date.timezone', "Europe/Moscow");
 
-
 ini_set('include_path', get_include_path() . PATH_SEPARATOR . BASE_DIR . '/classes/');
+
 
 # FIX pathes
 require_once 'Path.php';

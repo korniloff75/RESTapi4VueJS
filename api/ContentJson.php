@@ -6,6 +6,8 @@ class ContentJson extends Api
 	public $apiName = __CLASS__;
 	protected
 		$dbPath = '../db/',
+		$contentObj,
+		$currentItem,
 		$cache;
 
 	public function __construct($id = null)
@@ -13,14 +15,32 @@ class ContentJson extends Api
 		$cache = new Caching;
 
 		$this->dataObj = new \DbJSON;
+		$this->contentObj = new \ParseContent('../content/');
+		$this->currentItem = $this->contentObj->getFromMap($_REQUEST['page'] ?? null);
+
+		// print_r($this->currentItem);
+
 
 		$this->dataObj->db = [
 			'menu' => $cache->get('menu.htm', function() {
-				return (new ParseContent('../content/'))->createMenu();
+				return $this->$contentObj->createMenu();
 			}),
 
-			'main' => !empty($_REQUEST['page']) ? file_get_contents(CONTENT_DIR . ($_REQUEST['page'])) : '' // Нужно определить контент по умолчанию
+			// 'main_' => !empty($_REQUEST['page']) ? file_get_contents(CONTENT_DIR . ($_REQUEST['page'])) : '', // Нужно определить контент по умолчанию
+
+			'main' => [
+				'title' => $this->currentItem['data']['title'],
+				'body' => ''
+			]
 		];
+
+		foreach($this->currentItem['path'] as $path) {
+			$path = BASE_DIR . "/$path";
+			if(file_exists($path)) $this->dataObj->db['main']['body'] .= file_get_contents($path);
+			// print_r($path);
+		}
+
+		// print_r($this->dataObj->db['main']);
 
 		parent::__construct($id);
 

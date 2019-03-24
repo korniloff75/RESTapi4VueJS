@@ -10,8 +10,8 @@ abstract class Api
 			"Access-Control-Allow-Orgin: *",
 			"Access-Control-Allow-Methods: *",
 			# Запрещён в CORS
-			// "Content-Type: application/json",
-			"Content-Type: text/plain",
+			"Content-Type: application/json",
+			// "Content-Type: text/plain",
 
 		],
 		$method = '', //GET|POST|PUT|DELETE
@@ -52,7 +52,7 @@ abstract class Api
   }
 
 
-	public function run()
+	protected function run()
 	{
 		# Открываем базу
 		$this->dataObj = $this->dataObj ?? new \DbJSON($this->dbPath . 	$this->apiName . '.json');

@@ -108,17 +108,21 @@ class ParseContent
 	public function getFromMap($url=null)
 	{
 		$url = $url ?? $_SERVER['REQUEST_URI'];
+
+		# Define default page
 		if($url === '/') {
 			$this->allInDirFilterIterator->rewind();
 			// var_dump($this->allInDirFilterIterator->current()->isFile(), $this->allInDirFilterIterator->current()->getPathname());
 
-			$url = \Path::fixSlashes($this->allInDirFilterIterator->current()->getPathname());
+			$url = $this->allInDirFilterIterator->current()->getPathname();
 			$url = str_replace(CONTENT_DIRNAME, '', $url);
 		}
+
+		$url = \Path::fixSlashes($url);
+
 		$path = explode('/', dirname(trim($url,'\\/')));
-		var_dump($url, $path);
-		// if(!$path[0]) $path = [];
-		// $path = $this->allInDirFilterIterator
+		// var_dump($url, $path);
+
 		$ev = '$cur = $this->ContentMap';
 		foreach($path as $i) {
 		 $ev .= "['children']['$i']";

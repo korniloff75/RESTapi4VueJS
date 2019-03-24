@@ -15,8 +15,12 @@ window.onpopstate = function (e) {
 var Mixins = {
 	methods: {
 		updateContent: function(url) {
-			var _this = vm || this;
+			var _this = vm || this,
+				_thisComp = this;
 			console.clear();
+			console.log('\nupdateContent',
+				'\n_thisComp = ', _thisComp,
+			);
 
 			axios.get(url, {
 				// headers: new Headers(),
@@ -24,18 +28,26 @@ var Mixins = {
 				// cache: 'default'
 			})
 			.then(function(response) {
-				_this.doc = (new DOMParser()).parseFromString(response.data, "text/html");
-				document.title = _this.doc.title;
+				_thisComp.$root.ajax = 1;
+				_thisComp.$root.doc = (new DOMParser()).parseFromString(response.data.body, "text/html");
+				document.title = response.data.title;
 
-				// console.log('navMenu response', response, response.data);
-				_this.$root.response.main = _this.doc.documentElement.innerHTML;
+				console.log('\nresponse.data = ',
+				typeof response.data,
+				response.data
+					// '\n_this.$root = ', _this.$root, (_this.$root === _this)
+				);
+				_thisComp.$root.response.main = '<h1>' + document.title + '</h1>\n' + _thisComp.$root.doc.documentElement.innerHTML;
 
-				_this.$nextTick(_this.evalScripts);
+				/* _thisComp.$root.$nextTick(function() {
 
-				history.pushState({
+					_thisComp.evalScripts();
+				}); */
+
+				/* history.pushState({
 					title: document.title,
-					content: _this.html
-				}, document.title, '?' + url);
+					content: _thisComp.$root.html
+				}, document.title, '?' + url); */
 
 			})
 			.catch(function (error) {
@@ -44,7 +56,7 @@ var Mixins = {
 			// ,
 				// href = t.getAttribute('data-href');
 
-			axios.post(__aside.folder + url)
+			/* axios.post(__aside.folder + url)
 			.then(function (response) {
 				_this.doc = (new DOMParser()).parseFromString(response.data, "text/html");
 				document.title = _this.doc.title;
@@ -63,7 +75,7 @@ var Mixins = {
 			})
 			.catch(function (error) {
 				console.error(error);
-			});
+			}); */
 
 			console.log(
 				// url,
@@ -83,7 +95,10 @@ var Mixins = {
 		}, */
 
 		evalScripts() {
-			console.log('evalScripts / $nextTick\n');
+			console.log(
+				'evalScripts / $nextTick\n',
+				this.doc.querySelectorAll('script')
+			);
 			[].forEach.call(
 			this.doc.querySelectorAll('script'),
 			i => {
@@ -151,8 +166,9 @@ var navMenu = Vue.component('menu-items', {
 			var li = t.parentNode,
 				href = t.getAttribute('data-href');
 
-			axios.get(APIpath + 'api/ContentJson/?page=' +
-			 href, {
+			this.updateContent(APIpath + 'api/ContentJson/main/?page=' + href);
+
+			/* axios.get(APIpath + 'api/ContentJson/main/?page=' + href, {
 				// headers: new Headers(),
 				mode: 'cors',
 				// cache: 'default'
@@ -164,7 +180,7 @@ var navMenu = Vue.component('menu-items', {
 			})
 			.catch(function (error) {
 				console.log(error);
-			});
+			}); */
 		},
 
 		_navHandler (e) {
@@ -206,6 +222,7 @@ var navMenu = Vue.component('menu-items', {
 }); // menu-items
 
 
+
 Vue.component(
 	'main-content',  {
 		data: function() {
@@ -213,8 +230,26 @@ Vue.component(
 				html: this.$root.response.main
 			}
 		},
+		be() {
+			this.$root.response.main = this.$el.innerHTML
+		},
+		created() {
+			_this = this;
+			this.$root.$nextTick(function() {
+				console.log(
+					'\nthis.$root.$nextTick',
+					// '\nthis = ', this,
+					// '\n_this.$template = ', _this
+				);
+			});
+		},
+
 		// v-html="$root.response.main"
-		template: '<main><slot/></main>'
+		template: `
+		<main v-if="$root.ajax" v-html="$root.response.main">
+		</main>
+		<main v-else><slot/></main>
+		`
 	}
 ); // main-content
 
@@ -236,6 +271,7 @@ var vm = new Vue({
 	},
 
 	data: {
+		ajax: 0,
 		doc: 'empty',
 		html: 'html - Это корневой скоп.',
 		response: {
