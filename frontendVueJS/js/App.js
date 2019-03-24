@@ -49,8 +49,9 @@ var Mixins = {
 
 				/* history.pushState({
 					title: document.title,
-					content: _thisComp.$root.html
-				}, document.title, '?' + url); */
+					// content: _thisComp.$root.doc.documentElement
+					// content: page.html
+				}, document.title, '/' + url); */
 
 			})
 			.catch(function (error) {
@@ -58,27 +59,6 @@ var Mixins = {
 			});
 			// ,
 				// href = t.getAttribute('data-href');
-
-			/* axios.post(__aside.folder + url)
-			.then(function (response) {
-				_this.doc = (new DOMParser()).parseFromString(response.data, "text/html");
-				document.title = _this.doc.title;
-
-				_this.html = _this.doc.documentElement.innerHTML;
-
-				_this.$nextTick(_this.evalScripts);
-
-				console.log('_this.template = ', _this.$template);
-
-
-				history.pushState({
-					title: document.title,
-					content: _this.html
-				}, document.title, '?' + url);
-			})
-			.catch(function (error) {
-				console.error(error);
-			}); */
 
 			console.log(
 				// url,
