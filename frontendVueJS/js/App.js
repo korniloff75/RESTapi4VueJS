@@ -7,7 +7,7 @@ axios.defaults.headers.common = {
 // console.log(axios.defaults.headers.common);
 
 window.onpopstate = function (e) {
-	vm.html = e.state.content;
+	vm.response.main = e.state.main;
 	document.title = e.state.title;
 	// console.log("location: " + document.location, "\n state: ", e.state);
 };
@@ -15,6 +15,8 @@ window.onpopstate = function (e) {
 Vue.store = {};
 
 Vue.H = Vue.H || {
+	cache: null,
+
 	/**
 	 * Разбираем @elem на JS и HTML
 	 * Возвращаем объект с ними и методом eval
@@ -111,11 +113,11 @@ var Mixins = {
 					_thisComp.$root.scriptLinks = _thisComp.$root.parsedPage.eval();
 				});
 
-				/* history.pushState({
+				history.pushState({
 					title: document.title,
-					// content: _thisComp.$root.doc.documentElement
-					// content: _thisComp.$root.parsedPage.html
-				}, document.title, '/' + url); */
+					main: _thisComp.$root.response.main
+					// parsedPage: _thisComp.$root.parsedPage
+				}, document.title, url.split('page=')[1]);
 
 			})
 			.catch(function (error) {
@@ -133,12 +135,6 @@ var Mixins = {
 	}, // methods
 
 
-	created() {
-		// Кешируем глобал
-		this.cash = this.cash || Object.keys(window);
-		// this.$forceUpdate()
-	},
-
 	// beforeUpdate
 	updated() {
 		// this.$nextTick(this.evalScripts);
@@ -151,7 +147,7 @@ var Mixins = {
 
 
 // Menu
-var navMenu = Vue.component('menu-items', {
+Vue.component('menu-items', {
   data () {
     return {
 			activeItem: null
@@ -171,44 +167,31 @@ var navMenu = Vue.component('menu-items', {
 				href = t.getAttribute('data-href');
 
 			this.updateContent(APIpath + 'api/ContentJson/main/?page=' + href);
-
-			/* axios.get(APIpath + 'api/ContentJson/main/?page=' + href, {
-				// headers: new Headers(),
-				mode: 'cors',
-				// cache: 'default'
-			})
-			.then(function(response) {
-				// console.log('navMenu response', response, response.data);
-				_this.$root.response.main = response.data;
-
-			})
-			.catch(function (error) {
-				console.log(error);
-			}); */
 		},
 
-		isActive (ind) {
-			// don't used
-			// console.log('navMenu.$props = ', this.$props);
-			return ind === this.$root.defineCurPage.ind
-		}
 	}, // methods
 
+	computed: {
+		isActive (ind) {
+			// don't used
+			// console.log('this.$props = ', this.$props);
+			return ind === this.$root.defineCurPage.ind
+		}
+	},
 
-	// v-html="$root.response.menu"
+
 	template: '<nav @click.prevent="navHandler" ><slot/></nav>'
 
 }); // menu-items
 
 
-//
+// Удаляем JS из содержимого [is=main-content]
 var main = document.querySelector('[is=main-content]');
 Vue.store.parseMain = Vue.H.parseJS(main.innerHTML);
-
 main.innerHTML = '';
-// main.innerHTML = Vue.H.store.parseMain.html;
 
 
+// Компонент с контентом
 Vue.component('main-content',  {
 	data: function() {
 		return {
@@ -217,7 +200,7 @@ Vue.component('main-content',  {
 		}
 	},
 	updated() {
-		_this = this;
+		var _this = this;
 		this.$root.$nextTick(function() {
 			console.log(
 				'\nmainComponent.$root.$nextTick',
@@ -261,7 +244,10 @@ var vm = new Vue({
 			i.remove();
 		})
 	},
+
 	created: function () {
+		// Кешируем глобал
+		Vue.H.cache = Vue.H.cache || Object.keys(window);
 		/* console.log(
 			'\n vm.doc  = ',  this.doc,
 			'\n vm.$el  = ',  this.$el,
