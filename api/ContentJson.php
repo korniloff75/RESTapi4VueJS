@@ -52,7 +52,7 @@ class ContentJson extends Api
 	/**
 	 * Метод GET
 	 * Вывод списка всех записей
-	 * http://ДОМЕН/apiName
+	 * http://ДОМЕН/ContentJson
 	 * @return string
 	 */
 	public function indexAction()
@@ -68,7 +68,7 @@ class ContentJson extends Api
 	/**
 	 * Метод GET
 	 * Просмотр отдельной записи (по id)
-	 * http://ДОМЕН/apiName/1
+	 * http://ДОМЕН/ContentJson/1
 	 * @return string
 	 */
 	public function viewAction()

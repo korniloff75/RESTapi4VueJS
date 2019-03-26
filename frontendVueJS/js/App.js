@@ -4,45 +4,60 @@ var APIpath = '/';
 axios.defaults.headers.common = {
 	Accept: 'application/json'
 };
-// console.log(axios.defaults.headers.common);
 
+// Доработать исполнение скриптов
 window.onpopstate = function (e) {
 	vm.response.main = e.state.main;
 	document.title = e.state.title;
-	// console.log("location: " + document.location, "\n state: ", e.state);
+	console.log(
+		"\nonpopstate:\n",
+		document.location,
+		"\n state: ", e.state,
+		"\n state.__proto__: ", e.state.__proto__,
+	);
 };
 
 Vue.store = {};
 
+// Helper 4 Vue
 Vue.H = Vue.H || {
 	cache: null,
 
 	/**
 	 * Разбираем @elem на JS и HTML
-	 * Возвращаем объект с ними и методом eval
+	 * Конструктор создаёт объект с ними и методом eval
 	 *
 	 * @param {string | document} elem
 	 */
-	parseJS(elem) {
+	ParseJS: function (elem) {
 		if(typeof elem === 'string') {
 			elem = (new DOMParser()).parseFromString(elem, "text/html");
 		}
-		var out = {scripts: []};
+		this.scripts = [];
 
 		[].forEach.call(
 		elem.querySelectorAll('script'),
 		i => {
-			out.scripts.push(i);
+			this.scripts.push(i);
 			i.remove();
 		});
 
-		out.html = elem.documentElement.innerHTML;
+		this.html = elem.documentElement.innerHTML;
 
+		this.__proto__ = Vue.H.ParseJSProto;
+		console.log(
+			// '\nParseJS.prototype = \n',
+			// this.prototype,
+			// this.__proto__
+		);
+	}, // ParseJS
+
+	ParseJSProto: {
 		/**
-		 * При вызове исполняет скрипты
+		 * При вызове исполняет скрипты из this.scripts
 		 * и возвращает на них ссылки DOM
 		 */
-		out.eval = function() {
+		eval: function() {
 			// Ссылки на созданные скрипты для их удаления
 			var links = [];
 			this.scripts.forEach(i => {
@@ -57,10 +72,11 @@ Vue.H = Vue.H || {
 				}
 
 			});
+			// console.log('ParseJS.prototype = ', this.__proto__);
 			return links;
 		}
-		return out;
-	}, // parseJS
+	},
+
 
 	// Очищаем глобал перед обновлением
 	clearClob() {
@@ -78,14 +94,21 @@ Vue.H = Vue.H || {
 
 }
 
+
 var Mixins = {
 	methods: {
+		/**
+		 * Получаем ответ GET-запроса на @url
+		 * Обновляем data в $root
+		 *
+		 * @param {string} url
+		 */
 		updateContent: function(url) {
 			var _thisComp = this;
 
 			console.clear();
-			console.log('\nupdateContent',
-				'\n_thisComp = ', _thisComp,
+			console.log('\nruning updateContent',
+				// '\n_thisComp = ', _thisComp,
 			);
 
 			axios.get(url, {
@@ -97,25 +120,28 @@ var Mixins = {
 				_thisComp.$root.ajax = 1;
 
 				// Делим документ на скрипты и html
-				_thisComp.$root.parsedPage = Vue.H.parseJS(response.data.body);
+				_thisComp.$root.parsedPage = new Vue.H.ParseJS(response.data.body);
 
 				document.title = response.data.title;
 
-				console.log(
+				/* console.log(
 					'\nresponse.data = ',
 					typeof response.data,
-					// '\n_this.$root = ', _this.$root, (_this.$root === _this)
-				);
+				); */
 
 				_thisComp.$root.response.main = '<h1>' + document.title + '</h1>\n' + _thisComp.$root.parsedPage.html;
 
+				// Исполняем скрипты
 				_thisComp.$root.$nextTick(function() {
+					console.log(_thisComp.$root.parsedPage);
 					_thisComp.$root.scriptLinks = _thisComp.$root.parsedPage.eval();
 				});
 
+
 				history.pushState({
 					title: document.title,
-					main: _thisComp.$root.response.main
+					main: _thisComp.$root.response.main,
+					__proto__: _thisComp.$root.parsedPage,
 					// parsedPage: _thisComp.$root.parsedPage
 				}, document.title, url.split('page=')[1]);
 
@@ -123,8 +149,6 @@ var Mixins = {
 			.catch(function (error) {
 				console.log(error);
 			});
-			// ,
-				// href = t.getAttribute('data-href');
 
 			console.log(
 				// url,
@@ -141,7 +165,6 @@ var Mixins = {
 		console.log(
 			'updated\n',
 			'this = ', this);
-		// this.fixSRC();
 	},
 }; // Mixins
 
@@ -158,27 +181,26 @@ Vue.component('menu-items', {
 
 	methods: {
 		navHandler (e) {
-			var t = e.target.closest('a'),
-				_this = this;
+			var t = e.target.closest('a');
 
 			if(!t) return;
 
-			var li = t.parentNode,
-				href = t.getAttribute('data-href');
+			var li = t.closest('li'),
+				href = t.getAttribute('data-href'),
+				active = this.$el.querySelector('li.active');
 
 			this.updateContent(APIpath + 'api/ContentJson/main/?page=' + href);
+
+			this.activeItem = li;
+			active && active.classList.remove('active');
+			li.classList.add('active');
 		},
 
 	}, // methods
 
 	computed: {
-		isActive (ind) {
-			// don't used
-			// console.log('this.$props = ', this.$props);
-			return ind === this.$root.defineCurPage.ind
-		}
-	},
 
+	},
 
 	template: '<nav @click.prevent="navHandler" ><slot/></nav>'
 
@@ -187,28 +209,21 @@ Vue.component('menu-items', {
 
 // Удаляем JS из содержимого [is=main-content]
 var main = document.querySelector('[is=main-content]');
-Vue.store.parseMain = Vue.H.parseJS(main.innerHTML);
+
+Vue.store.parseMain = new Vue.H.ParseJS(main.innerHTML);
+// console.log(Vue.store.parseMain);
 main.innerHTML = '';
 
 
 // Компонент с контентом
 Vue.component('main-content',  {
-	data: function() {
+	data() {
 		return {
 			store: Vue.store,
 			html: this.$root.response.main
 		}
 	},
-	updated() {
-		var _this = this;
-		this.$root.$nextTick(function() {
-			console.log(
-				'\nmainComponent.$root.$nextTick',
-				// '\nthis = ', this,
-				// '\n_this.$template = ', _this
-			);
-		});
-	},
+
 	// v-html="$root.response.main"
 	template: `
 	<main v-if="$root.ajax" v-html="$root.response.main">
@@ -234,18 +249,11 @@ var vm = new Vue({
 		},
 	},
 
-	mixins: [Mixins],
+	// mixins: [Mixins],
 
 
 	// Hooks
-	beforeUpdate() {
-		// Clean old scripts
-		this.scriptLinks.forEach(i=>{
-			i.remove();
-		})
-	},
-
-	created: function () {
+		created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
 		/* console.log(
@@ -255,6 +263,11 @@ var vm = new Vue({
 
 	}, // created
 
-	// beforeUpdate
+	beforeUpdate() {
+		// Clean old scripts
+		this.scriptLinks.forEach(i=>{
+			i.remove();
+		})
+	}, // beforeUpdate
 
 }); // vm
