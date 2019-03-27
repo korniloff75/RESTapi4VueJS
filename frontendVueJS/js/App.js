@@ -149,7 +149,6 @@ var Mixins = {
 Vue.component('menu-items', {
   data () {
     return {
-			href:'',
 			activeItem: null
     }
 	},
@@ -178,14 +177,14 @@ Vue.component('menu-items', {
 
 			var li = t.closest('li'),
 				hrefAjax = t.getAttribute('data-href'),
-				active = this.$el.querySelector('li.active');
+				active = this.$el.querySelector('li.active'),
+				href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
 
-			this.href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
-			this.updateContent(this.href);
+			this.updateContent(href);
 
 			history.pushState({
 				title: document.title,
-				href: this.href,
+				href: href,
 				// html: Vue.store.parsedPage.html,
 				// scripts: Vue.store.parsedPage.scripts,
 			}, document.title, hrefAjax);
