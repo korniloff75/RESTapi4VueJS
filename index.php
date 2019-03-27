@@ -68,7 +68,7 @@ foreach($currentInMenu['path'] as $path) {
 echo "</main>";
 ?>
 </div> <!-- #app -->
-<script src="/<?=FRONT_DIR?>/js/App.js"></script>
+<script src="/<?=FRONT_DIR?>/js/App.js" defer="defer"></script>
 
 <footer>
 </footer>

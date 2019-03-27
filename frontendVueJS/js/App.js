@@ -1,3 +1,4 @@
+'use strict';
 // var APIpath = 'http://restapi:90/';
 var APIpath = '/';
 
@@ -5,19 +6,11 @@ axios.defaults.headers.common = {
 	Accept: 'application/json'
 };
 
-// Доработать исполнение скриптов
-window.onpopstate = function (e) {
-	vm.response.main = e.state.main;
-	document.title = e.state.title;
-	console.log(
-		"\nonpopstate:\n",
-		document.location,
-		"\n state: ", e.state,
-		"\n state.__proto__: ", e.state.__proto__,
-	);
-};
 
-Vue.store = {};
+// Common storage
+Vue.store = {
+
+};
 
 // Helper 4 Vue
 Vue.H = Vue.H || {
@@ -29,7 +22,11 @@ Vue.H = Vue.H || {
 	 *
 	 * @param {string | document} elem
 	 */
-	ParseJS: function (elem) {
+	ParseJS: function ParseJS (elem) {
+		if (!(this instanceof ParseJS)) {
+			return new ParseJS(elem);
+		}
+
 		if(typeof elem === 'string') {
 			elem = (new DOMParser()).parseFromString(elem, "text/html");
 		}
@@ -44,38 +41,12 @@ Vue.H = Vue.H || {
 
 		this.html = elem.documentElement.innerHTML;
 
-		this.__proto__ = Vue.H.ParseJSProto;
 		console.log(
 			// '\nParseJS.prototype = \n',
 			// this.prototype,
 			// this.__proto__
 		);
 	}, // ParseJS
-
-	ParseJSProto: {
-		/**
-		 * При вызове исполняет скрипты из this.scripts
-		 * и возвращает на них ссылки DOM
-		 */
-		eval: function() {
-			// Ссылки на созданные скрипты для их удаления
-			var links = [];
-			this.scripts.forEach(i => {
-				if(i.src) {
-					var s = document.createElement('script');
-					s.src = i.src;
-					document.head.appendChild(s);
-					links.push(s);
-				} else {
-					// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
-					eval(i.innerHTML);
-				}
-
-			});
-			// console.log('ParseJS.prototype = ', this.__proto__);
-			return links;
-		}
-	},
 
 
 	// Очищаем глобал перед обновлением
@@ -92,7 +63,32 @@ Vue.H = Vue.H || {
 		}
 	},
 
+} // Vue.H
+
+
+/**
+ * При вызове исполняет скрипты из this.scripts
+ * и возвращает на них ссылки DOM
+ */
+Vue.H.ParseJS.prototype.eval = function() {
+	// Ссылки на созданные скрипты для их удаления
+	var links = [];
+	this.scripts.forEach(i => {
+		if(i.src) {
+			var s = document.createElement('script');
+			s.src = i.src;
+			document.head.appendChild(s);
+			links.push(s);
+		} else {
+			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
+			eval(i.innerHTML);
+		}
+
+	});
+	// console.log('ParseJS.prototype = ', this.__proto__);
+	return links;
 }
+
 
 
 var Mixins = {
@@ -120,30 +116,11 @@ var Mixins = {
 				_thisComp.$root.ajax = 1;
 
 				// Делим документ на скрипты и html
-				_thisComp.$root.parsedPage = new Vue.H.ParseJS(response.data.body);
+				Vue.store.parsedPage = new Vue.H.ParseJS(response.data.body);
 
 				document.title = response.data.title;
 
-				/* console.log(
-					'\nresponse.data = ',
-					typeof response.data,
-				); */
-
-				_thisComp.$root.response.main = '<h1>' + document.title + '</h1>\n' + _thisComp.$root.parsedPage.html;
-
-				// Исполняем скрипты
-				_thisComp.$root.$nextTick(function() {
-					console.log(_thisComp.$root.parsedPage);
-					_thisComp.$root.scriptLinks = _thisComp.$root.parsedPage.eval();
-				});
-
-
-				history.pushState({
-					title: document.title,
-					main: _thisComp.$root.response.main,
-					__proto__: _thisComp.$root.parsedPage,
-					// parsedPage: _thisComp.$root.parsedPage
-				}, document.title, url.split('page=')[1]);
+				Vue.store.parsedPage.html = '<h1>' + document.title + '</h1>\n' + Vue.store.parsedPage.html;
 
 			})
 			.catch(function (error) {
@@ -161,10 +138,9 @@ var Mixins = {
 
 	// beforeUpdate
 	updated() {
-		// this.$nextTick(this.evalScripts);
 		console.log(
-			'updated\n',
-			'this = ', this);
+			'\nComponent ' + this.$options._componentTag + ' is updated\n',
+		);
 	},
 }; // Mixins
 
@@ -173,11 +149,26 @@ var Mixins = {
 Vue.component('menu-items', {
   data () {
     return {
+			href:'',
 			activeItem: null
     }
 	},
 
 	mixins: [Mixins],
+
+	created() {
+		// Доработать исполнение скриптов
+		window.onpopstate = e => {
+			// Vue.store.parsedPage = e.state.parsedPage;
+			this.updateContent(e.state.href);
+			document.title = e.state.title;
+			console.log(
+				"\nonpopstate:\n",
+				document.location,
+				"\n state: ", e.state,
+			);
+		};
+	},
 
 	methods: {
 		navHandler (e) {
@@ -186,10 +177,18 @@ Vue.component('menu-items', {
 			if(!t) return;
 
 			var li = t.closest('li'),
-				href = t.getAttribute('data-href'),
+				hrefAjax = t.getAttribute('data-href'),
 				active = this.$el.querySelector('li.active');
 
-			this.updateContent(APIpath + 'api/ContentJson/main/?page=' + href);
+			this.href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
+			this.updateContent(this.href);
+
+			history.pushState({
+				title: document.title,
+				href: this.href,
+				// html: Vue.store.parsedPage.html,
+				// scripts: Vue.store.parsedPage.scripts,
+			}, document.title, hrefAjax);
 
 			this.activeItem = li;
 			active && active.classList.remove('active');
@@ -207,32 +206,57 @@ Vue.component('menu-items', {
 }); // menu-items
 
 
-// Удаляем JS из содержимого [is=main-content]
-var main = document.querySelector('[is=main-content]');
-
-Vue.store.parseMain = new Vue.H.ParseJS(main.innerHTML);
-// console.log(Vue.store.parseMain);
-main.innerHTML = '';
-
-
 // Компонент с контентом
-Vue.component('main-content',  {
+var mainContent = Vue.component('main-content',  {
 	data() {
 		return {
 			store: Vue.store,
-			html: this.$root.response.main
 		}
 	},
 
-	// v-html="$root.response.main"
+	watch: {
+		store: function() {
+			console.log(
+			'\nComponent ' + this.$options._componentTag + '\n',
+			''
+		);
+
+		this.store.parsedPage.eval();
+		}
+	},
+
+	updated() {
+		console.log(
+			'\nComponent ' + this.$options._componentTag + ' is updated\n',
+			// this
+		);
+		this.store.parsedPage.eval();
+		// this.$root.parsedPage.eval();
+	},
+
 	template: `
-	<main v-if="$root.ajax" v-html="$root.response.main">
+	<main v-if="store.parsedPage" v-html="store.parsedPage.html">
 	</main>
-	<main v-else v-html="store.parseMain.html">
+	<main v-else><slot/>
 	</main>
 	`
 }); // main-content
 
+
+// window.addEventListener('load', function() {
+	// Удаляем JS из содержимого [is=main-content]
+	var main = document.querySelector('[is=main-content]');
+
+	// vm.parsedPage = new Vue.H.ParseJS(main.innerHTML);
+	Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
+
+	/* console.log(
+		// Vue.store.parseMain,
+		// Vue.store.parseMain.eval
+	); */
+	main.innerHTML = '';
+
+// });
 
 
 //
@@ -241,25 +265,31 @@ var vm = new Vue({
 
 	data: {
 		ajax: 0,
-		parsedPage: null,
+		store: Vue.store,
+		// parsedPage: null,
 		scriptLinks: null,
-		response: {
-			menu: 'Тут будет меню. Это корневой скоп.',
-			main: 'А тут будет контент!!! Это корневой скоп.'
-		},
 	},
 
 	// mixins: [Mixins],
 
 
 	// Hooks
-		created () {
+	created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
 		/* console.log(
 			'\n vm.doc  = ',  this.doc,
 			'\n vm.$el  = ',  this.$el,
 		); */
+
+		// Исполняем скрипты
+		this.$nextTick(function() {
+			console.log(
+				'\n$root.$nextTick\n',
+				// _thisComp.$root.parsedPage
+			);
+			this.scriptLinks = this.store.parsedPage.eval();
+		});
 
 	}, // created
 
@@ -269,5 +299,10 @@ var vm = new Vue({
 			i.remove();
 		})
 	}, // beforeUpdate
+
+	updated() {
+		console.log('\n$root is updated\n');
+		this.scriptLinks = this.parsedPage.eval();
+	},
 
 }); // vm
