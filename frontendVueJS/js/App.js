@@ -86,6 +86,7 @@ Vue.H.ParseJS.prototype.eval = function() {
 
 	});
 	// console.log('ParseJS.prototype = ', this.__proto__);
+	Vue.store.scriptLinks = links;
 	return links;
 }
 
@@ -100,7 +101,8 @@ var Mixins = {
 		 * @param {string} url
 		 */
 		updateContent: function(url) {
-			var _thisComp = this;
+			var start = Date.now(),
+				_thisComp = this;
 
 			console.clear();
 			console.log('\nruning updateContent',
@@ -122,15 +124,13 @@ var Mixins = {
 
 				Vue.store.parsedPage.html = '<h1>' + document.title + '</h1>\n' + Vue.store.parsedPage.html;
 
+				console.info(`Контент обновился за ${Date.now() - start} мс`);
+
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
 
-			console.log(
-				// url,
-				// '\n this.$el  = ',  this.$el
-			);
 		}, // updateContent
 
 	}, // methods
@@ -213,15 +213,11 @@ var mainContent = Vue.component('main-content',  {
 		}
 	},
 
-	watch: {
-		store: function() {
-			console.log(
-			'\nComponent ' + this.$options._componentTag + '\n',
-			''
-		);
-
-		this.store.parsedPage.eval();
-		}
+	beforeUpdate() {
+		// Clean old scripts
+		Vue.store.scriptLinks && Vue.store.scriptLinks.forEach(i=>{
+			i.remove();
+		})
 	},
 
 	updated() {
@@ -230,7 +226,6 @@ var mainContent = Vue.component('main-content',  {
 			// this
 		);
 		this.store.parsedPage.eval();
-		// this.$root.parsedPage.eval();
 	},
 
 	template: `
@@ -242,31 +237,24 @@ var mainContent = Vue.component('main-content',  {
 }); // main-content
 
 
-// window.addEventListener('load', function() {
+(function() {
 	// Удаляем JS из содержимого [is=main-content]
 	var main = document.querySelector('[is=main-content]');
 
-	// vm.parsedPage = new Vue.H.ParseJS(main.innerHTML);
 	Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
 
-	/* console.log(
-		// Vue.store.parseMain,
-		// Vue.store.parseMain.eval
-	); */
 	main.innerHTML = '';
 
-// });
+})();
 
 
 //
-var vm = new Vue({
+new Vue({
 	el: '#app',
 
 	data: {
 		ajax: 0,
 		store: Vue.store,
-		// parsedPage: null,
-		scriptLinks: null,
 	},
 
 	// mixins: [Mixins],
@@ -276,10 +264,10 @@ var vm = new Vue({
 	created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
-		/* console.log(
-			'\n vm.doc  = ',  this.doc,
-			'\n vm.$el  = ',  this.$el,
-		); */
+		console.log(
+			'\n $root created\n',
+			// '\n vm.$el  = ',  this.$el,
+		);
 
 		// Исполняем скрипты
 		this.$nextTick(function() {
@@ -287,21 +275,14 @@ var vm = new Vue({
 				'\n$root.$nextTick\n',
 				// _thisComp.$root.parsedPage
 			);
-			this.scriptLinks = this.store.parsedPage.eval();
+			this.store.parsedPage.eval();
 		});
 
 	}, // created
 
-	beforeUpdate() {
-		// Clean old scripts
-		this.scriptLinks.forEach(i=>{
-			i.remove();
-		})
-	}, // beforeUpdate
-
 	updated() {
+		// Не работает
 		console.log('\n$root is updated\n');
-		this.scriptLinks = this.parsedPage.eval();
 	},
 
-}); // vm
+}); // #app
