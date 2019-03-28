@@ -83,9 +83,10 @@ Vue.H.ParseJS.prototype.eval = function() {
 			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 			eval(i.innerHTML);
 		}
+			console.log('this in eval = ', this);
 
 	});
-	// console.log('ParseJS.prototype = ', this.__proto__);
+
 	Vue.store.scriptLinks = links;
 	return links;
 }
@@ -225,14 +226,35 @@ var mainContent = Vue.component('main-content',  {
 			'\nComponent ' + this.$options._componentTag + ' is updated\n',
 			// this
 		);
+
+		// this.$nextTick(Vue.store.parsedPage.eval.bind(Vue.store.parsedPage));
 		this.store.parsedPage.eval();
 	},
 
+	methods: {
+		// Не работает
+		enter(el, done) {
+			done();
+			Vue.store.parsedPage.eval();
+			console.log('transition enter!');
+		}
+	},
+
+	// mode="out-in"
+	// mode="in-out"
+	// :css="false"
+	// @:enter="enter"
 	template: `
-	<main v-if="store.parsedPage" v-html="store.parsedPage.html">
+	<transition name="fade" appear
+		:duration="{ enter: 3700, leave: 0 }"
+	>
+	<main
+		:key="store.parsedPage.html"
+		v-if="store.parsedPage"
+		v-html="store.parsedPage.html"
+	>
 	</main>
-	<main v-else><slot/>
-	</main>
+	</transition>
 	`
 }); // main-content
 

@@ -1,22 +1,5 @@
 <?php
-
 ob_start();
-# Разбираем параметры, разделённые слешем
-$requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];
-$requestUri = explode('/', trim($requestUri,'\\/'));
-
-// var_dump($requestUri, (bool) $requestUri);
-
-######
-# FrontEnd
-
-// require_once FRONT_DIR . '/index.php';
-if(!array_shift($requestUri)) {
-
-
-	// exit;
-} // FrontEnd
-######
 
 # Подключение классов, настройки display_errors etc...
 require_once 'commonStart.php';
@@ -49,10 +32,26 @@ $currentInMap = $contentObj->getFromMap();
 	<title><?=$currentInMap['data']['title']?></title>
 	<link rel="stylesheet" href="/templates/core.css">
 
-	<script src="/<?=FRONT_DIR?>/js/vue.js"></script>
+	<script src="/<?=FRONT_DIR?>/js/vue/v2.6.10.js"></script>
 
 	<script src="/<?=FRONT_DIR?>/js/axios/0.18.0/axios.min.js"></script>
 	<link rel="stylesheet" href="css/styles.css">
+	<style>
+	main.fade-enter-active {
+		transition: opacity 1.2s;
+	}
+	/*
+	.fade-leave,
+	.fade-leave-active,
+	.fade-leave-to {
+		display: none,
+		transition: none;
+	}
+	*/
+	main.fade-enter, main.fade-leave-to {
+		opacity: 0;
+	}
+	</style>
 </head>
 
 <body>
