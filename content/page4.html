@@ -16,30 +16,34 @@
 	}
 </style>
 
-<!-- <ol id="nav_">
-	<li class="active">пункт</li>
-	<li>пункт</li>
-	<li>пункт</li>
-	<li>пункт</li>
-	<li>пункт</li>
-</ol> -->
+<h2>Добавляем скрипт с новым экземпляром Vue.</h2>
 
 <ol id="nav">
-	<li v-for="li in 7">пункт</li>
+	<li v-for="li in 10">пункт</li>
 </ol>
 
-
-
 <script type="text/javascript">
-	document.getElementById('nav').onclick = function (e) {
-		[].forEach.call(this.querySelectorAll('li'), function (i) {
-			i.classList.remove('active');
-		})
-		e.target.closest('li').classList.add('active');
-		e.stopPropagation();
-	}
+	new Vue({
+		el: '#nav',
+		data: {
+			active: null
+		},
+
+		mounted() {
+			this.$el.onclick = function (e) {
+				var t = e.target.closest('li'),
+					prev = this.querySelector('li.active');
+
+				if(!t) return;
+
+				prev && prev.classList.remove('active');
+				t.classList.add('active');
+				e.stopPropagation();
+			}
+		},
+	})
 </script>
-</p>
+
 </body>
 
 </html>

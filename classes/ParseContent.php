@@ -171,7 +171,6 @@ class ParseContent
 						$cur->getFilename() => $item
 					],
 				];
-				ksort($item['children'], SORT_NATURAL);
 				// print_r( $item);
 			}
 
