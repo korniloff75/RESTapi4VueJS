@@ -3,8 +3,9 @@ class ParseContent
 {
 	public
 		$allInDirFilterIterator,
-		$arr, # array with $allInDirFilterIterator
-		$ContentMap=[];
+		// $arr, # array with $allInDirFilterIterator
+		$ContentMap=[],
+		$cach;
 
 	protected
 		$path,
@@ -15,12 +16,13 @@ class ParseContent
 
 	public function __construct($path='content/')
 	{
-		$this->path = $path  ;
+		$this->path = $path;
 
 		$this->run($path);
 
 		# Open map's file
 		$ContentObj = new DbJSON('/db/ContentMap.json');
+
 		# Обновляем базу при заходе через корневой index.php
 		if(\DEV && realpath('') === realpath(BASE_DIR)) {
 			$ContentObj->replace($this->toArray());
@@ -37,41 +39,8 @@ class ParseContent
 		# Define ContentMap
 		$this->ContentMap = $ContentObj->db;
 
-		// $this->arr = $this->toArray();
-
 	}
 
-
-	/* public function _run($path)
-	{
-		$allInDir = new \FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
-
-		# Файлы
-		$this->files = new CallbackFilterIterator($allInDir, function($cur) {
-			return $cur->isFile() && in_array($cur->getExtension(), $this->fileExts);
-		});
-
-		# Папки кроме служебных
-		$this->dirs = new CallbackFilterIterator($allInDir, function($cur) {
-			return $cur->isDir() && !in_array($cur->getFilename(), $this->serveDirs);
-		});
-
-		var_dump(
-			// $allInDir->getFilename()
-		);
-
-		# Наплняем scheme
-		if(iterator_count($this->files)) {
-			$this->scheme[$allInDir->getPathname()] = $this->files;
-		}
-
-		if(iterator_count($this->dirs)) {
-			foreach($this->dirs as $d) {
-				$this->scheme[$d->getFilename()]['children'] = $this->dirs;
-			}
-
-		}
-	} // run */
 
 	/**
 	 * @path - путь к папке с контентом
@@ -98,7 +67,7 @@ class ParseContent
 				}
 
 				# Выкидываем папки $this->serveDirs
-				elseif(
+				if(
 					$cur->isDir()
 					&& !in_array($cur->getFilename(), $this->serveDirs)
 				) {
@@ -126,69 +95,52 @@ class ParseContent
 		$this->allInDirFilterIterator = new RecursiveIteratorIterator($allInDirFilter);
 		// , RecursiveIteratorIterator::SELF_FIRST
 
-		print_r("\n===\nallFilterFoldersIterator\n===\n");
-		print_r("\n" . $this->allInDirFilterIterator->__toString());
-		var_dump(
-			$this->allInDirFilterIterator,
-			iterator_count($this->allInDirFilterIterator));
-		print_r("\n===\n/ allInDirFilterIterator\n===\n");
+		// print_r("\n===\nallFilterFoldersIterator\n===\n");
+		// print_r("\n" . $this->allInDirFilterIterator->__toString());
 
-	}
+	} // run
 
 
-	/* public function _toArray()
-	:array
+	/**
+	 * Получаем данные из $this->ContentMap
+	 * optional @url - путь к папке страницы относительно папки content/
+	 */
+	public function getFromMap($url=null)
 	{
-		$ritit = $this->allInDirFilterIterator;
-		$out = [];
+		$url = $url ?? $_SERVER['REQUEST_URI'];
 
-		// var_dump($ritit);
+		# Define default page
+		if($url === '/') {
+			$this->allInDirFilterIterator->rewind();
+			// var_dump($this->allInDirFilterIterator->current()->isFile(), $this->allInDirFilterIterator->current()->getPathname());
 
-		foreach ($this->allInDirFilterIterator as $pathname=>$splFileInfo) {
-			$level = $this->allInDirFilterIterator->getDepth();
-
-			if($splFileInfo->isFile()) {
-				$item = [
-					'content' => [$splFileInfo->getFilename()],
-					'dirname' => [$splFileInfo->getPath()],
-					// 'dirname' => [\Path::fromRoot(dirname($splFileInfo->getPathname()))],
-				];
-				$item['path'] = $pathname;
-				// $item['path'] = $item['dirname'][0] . "/{$splFileInfo->getFilename()}";
-
-				$data = $splFileInfo->getPath() . "/data.json";
-				// var_dump($data);
-
-				if(file_exists($data)) {
-					$item = array_merge($item, json_decode(file_get_contents($data), 1));
-					$this->sumObj->$pathname = $item;
-				}
-				// var_dump($splFileInfo);
-			}
-			else
-			{
-				continue;
-			}
-
-
-		  for ($depth = $level - 1; $depth >= 0; $depth--) {
-				$cur = $this->allInDirFilterIterator->getSubIterator($depth)->current();
-		    $item = [
-					'children' => [
-						$cur->getFilename() => $item
-					],
-				];
-			}
-
-			// $item['level'] = $level;
-			// var_dump($pathname, $item);
-			// echo '===';
-
-		  $out = array_merge_recursive($out, $item);
+			$url = $this->allInDirFilterIterator->current()->getPathname();
+			$url = str_replace(CONTENT_DIRNAME, '', $url);
 		}
 
-		return $out;
-	} */
+		$url = \Path::fixSlashes($url);
+
+		$path = explode('/', dirname(trim($url,'\\/')));
+		// var_dump($url, $path);
+
+		$ev = '$cur = $this->ContentMap';
+		foreach($path as $i) {
+		 $ev .= "['children']['$i']";
+		}
+
+		eval($ev . ';');
+
+		$cur['data'] = array_merge([
+			'title' => basename(dirname($cur['path'][0])),
+			'seo' => []
+		], ($cur['data'] ?? []));
+
+		if(!empty($cur['data']['seo'][1])) {
+			$cur['data']['seo'][1] = preg_replace("#,\s+?#", ',', $cur['data']['seo'][1]);
+		}
+
+		return $cur;
+	}
 
 
 	# Преобразуем $this->allInDirFilterIterator в массив
@@ -198,6 +150,7 @@ class ParseContent
 		$ritit = $this->allInDirFilterIterator;
 		// print_r($ritit);
 		$out = [];
+		echo '<pre>';
 
 		// var_dump($ritit);
 
@@ -224,17 +177,37 @@ class ParseContent
 						$cur->getFilename() => $item
 					],
 				];
+				ksort($item['children'], SORT_NATURAL);
+				// print_r( $item);
+				//
 			}
 
+
 			// $item['level'] = $level;
-			// var_dump($pathname, $item);
+			// echo '<pre>';
+			// print_r( $item);
+			// echo '</pre>';
 			// echo '===';
 
 		  $out = array_merge_recursive($out, $item);
 		}
 
+		/* $iter = new RecursiveIteratorIterator(
+			new RecursiveArrayIterator($out), RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach($iter as $k=>$i) {
+			if(is_numeric($k)) continue;
+			if($k === 'children') {
+				ksort($i, SORT_NATURAL);
+				print_r($i);
+				print_r("\n");
+			}
+		} */
+		echo '</pre>';
 		return $out;
 	}
+
 
 
 	# Создаём меню
@@ -244,26 +217,34 @@ class ParseContent
 		// global $nav;
 		$map = $map ?? $this->ContentMap;
 		// var_dump($map);
-		$nav .= '<ul>';
+
+		// ksort($map, SORT_NATURAL);
 
 		if(!empty($map['children']))
 		{
+			ksort($map['children'], SORT_NATURAL);
+
+			$nav .= "<ul>\n";
+
 			foreach($map['children'] as $child) {
 				$data = $child['data'] ?? [];
 				// var_dump($child);
 				if(!empty($child['path'])) {
 					foreach($child['path'] as $path) {
 						// var_dump($path);
-						$nav .= "<li><a href='/$path'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>";
+						$path = str_ireplace(CONTENT_DIRNAME . DIRECTORY_SEPARATOR, '', $path);
+
+						$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 					}
 				}
 
 				$nav = $this->createMenu($child, $nav);
 
 			}
+			$nav .= "</ul>\n";
 		}
 
-		return "{$nav}\n</ul>";
+		return $nav;
 	}
 
 

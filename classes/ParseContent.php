@@ -3,20 +3,16 @@ class ParseContent
 {
 	public
 		$allInDirFilterIterator,
-		// $arr, # array with $allInDirFilterIterator
-		$ContentMap=[],
-		$cach;
+		$ContentMap=[]; # array with $allInDirFilterIterator
 
 	protected
 		$path,
-		$fileExts = ['htm', 'html'],
-		$serveDirs = ['assets', 'img'],
-		$dirs,
-		$files;
+		$fileExts = ['htm', 'html'], # allowed extensions
+		$serveDirs = ['assets', 'img'];
 
-	public function __construct($path='content/')
+	public function __construct($path=null)
 	{
-		$this->path = $path;
+		$this->path = $path ?? "{CONTENT_DIRNAME}/";
 
 		$this->run($path);
 
@@ -96,14 +92,13 @@ class ParseContent
 		// , RecursiveIteratorIterator::SELF_FIRST
 
 		// print_r("\n===\nallFilterFoldersIterator\n===\n");
-		// print_r("\n" . $this->allInDirFilterIterator->__toString());
 
 	} // run
 
 
 	/**
 	 * Получаем данные из $this->ContentMap
-	 * optional @url - путь к папке страницы относительно папки content/
+	 * optional @url - путь к папке страницы относительно папки CONTENT_DIRNAME
 	 */
 	public function getFromMap($url=null)
 	{
@@ -148,8 +143,8 @@ class ParseContent
 	:array
 	{
 		$ritit = $this->allInDirFilterIterator;
-		// print_r($ritit);
 		$out = [];
+		// echo '<pre>';
 
 		// var_dump($ritit);
 
@@ -176,17 +171,19 @@ class ParseContent
 						$cur->getFilename() => $item
 					],
 				];
+				ksort($item['children'], SORT_NATURAL);
+				// print_r( $item);
 			}
 
-			// $item['level'] = $level;
-			// var_dump($pathname, $item);
-			// echo '===';
+			// print_r( $item);
 
 		  $out = array_merge_recursive($out, $item);
 		}
 
+		// echo '</pre>';
 		return $out;
-	}
+	} // toArray
+
 
 
 	# Создаём меню
@@ -195,53 +192,35 @@ class ParseContent
 	{
 		// global $nav;
 		$map = $map ?? $this->ContentMap;
+		if(empty($map['children'])) return $nav;
 		// var_dump($map);
 
+		$nav .= "<ul>\n";
 
-		if(!empty($map['children']))
-		{
-			$nav .= "<ul>\n";
-			foreach($map['children'] as $child) {
-				$data = $child['data'] ?? [];
-				// var_dump($child);
-				if(!empty($child['path'])) {
-					foreach($child['path'] as $path) {
-						// var_dump($path);
-						$path = str_ireplace('content' . DIRECTORY_SEPARATOR, '', $path);
+		foreach($map['children'] as $name=>$child) {
+			$data = $child['data'] ?? [];
+			// var_dump($child);
+			if(!empty($child['path'])) {
+				foreach($child['path'] as $path) {
+					// var_dump($path);
+					$path = str_ireplace(CONTENT_DIRNAME . DIRECTORY_SEPARATOR, '', $path);
 
-						$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
-					}
+					$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 				}
-
-				$nav = $this->createMenu($child, $nav);
-
 			}
-			$nav .= "</ul>\n";
+
+			if(!empty($child['children'])) {
+				$nav .= "<li class='sublist'>" . \H::translit($name, 'lat-cyr');
+				ksort($child['children'], SORT_NATURAL);
+				$nav = $this->createMenu($child, $nav);
+				$nav .= "</li>\n";
+			}
 		}
 
+		$nav .= "</ul>\n";
+
 		return $nav;
-	}
+	} // createMenu
 
 
-	/* public function recurseFind(string $findName, $callback, $arr=null)
-	:array
-	{
-		$arr = $arr ?? $this->arr;
-
-		if(!empty($arr[$findName])) {
-			foreach($arr[$findName] as $name=>&$item) {
-				$item = $callback ($item, $name);
-
-				#recurse
-				if(!empty($item[$findName])) {
-					return $this->recurseFind($findName, $callback, $item);
-				}
-
-			}
-		} // $findName
-		// return "<h1>END</h1>";
-		return $arr;
-	} */
-
-}
-
+} // ParseContent

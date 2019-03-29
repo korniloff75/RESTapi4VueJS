@@ -4,10 +4,10 @@ ob_start();
 # Подключение классов, настройки display_errors etc...
 require_once 'commonStart.php';
 
-$contentObj = new ParseContent('content/');
+$ContentObj = new ParseContent(CONTENT_DIRNAME . "/");
 # Caching
-$cache = new Caching;
-$currentInMap = $contentObj->getFromMap();
+$Cache = new Caching;
+$CurrentInMap = $ContentObj->getFromMap();
 
 # Формируем простой вывод для ПС
 ?>
@@ -21,15 +21,15 @@ $currentInMap = $contentObj->getFromMap();
 	<meta name="generator" content="KFF-3.0 -  js-master.ru">
 	<?php
 	# SEO
-	if(!empty($currentInMap['data']['seo'][0])) {
-		echo '<meta name="description" content="' . $currentInMap['data']['seo'][0] . '">';
+	if(!empty($CurrentInMap['data']['seo'][0])) {
+		echo '<meta name="description" content="' . $CurrentInMap['data']['seo'][0] . '">';
 	}
-	if(!empty($currentInMap['data']['seo'][1])) {
-		echo '<meta name="keywords" content="' . $currentInMap['data']['seo'][1] . '>';
+	if(!empty($CurrentInMap['data']['seo'][1])) {
+		echo '<meta name="keywords" content="' . $CurrentInMap['data']['seo'][1] . '>';
 	}
 	?>
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title><?=$currentInMap['data']['title']?></title>
+	<title><?=$CurrentInMap['data']['title']?></title>
 	<link rel="stylesheet" href="/templates/core.css">
 
 	<script src="/<?=FRONT_DIR?>/js/vue/v2.6.10.js"></script>
@@ -58,10 +58,10 @@ $currentInMap = $contentObj->getFromMap();
 <header></header>
 <div id="app">
 <?php
-echo "<nav is=\"menu-items\">" . $cache->get('menu.htm', $contentObj->createMenu()) . "</nav>\n";
+echo "<nav is=\"menu-items\">" . $Cache->get('menu.htm', $ContentObj->createMenu()) . "</nav>\n";
 echo "<main is=\"main-content\">";
-echo "<h1>{$currentInMap['data']['title']}</h1>";
-foreach($currentInMap['path'] as $path) {
+echo "<h1>{$CurrentInMap['data']['title']}</h1>";
+foreach($CurrentInMap['path'] as $path) {
 	if(file_exists($path)) require_once($path);
 }
 
@@ -91,7 +91,7 @@ echo '<pre>';
 print_r(
 	trim($_SERVER['REQUEST_URI'],'\\/')
 );
-// print_r($contentObj->ContentMap);
+// print_r($ContentObj->ContentMap);
 
 echo "\n===============\n";
 

@@ -5,10 +5,8 @@ require_once '../commonStart.php';
 
 # Разбираем параметры, разделённые слешем
 $requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];
-// print_r($requestUri . '<br>');
-// @list($enterPoint, $apiName, $id) = explode('/', trim($requestUri,'\\/'));
-
 $requestUri = explode('/', trim($requestUri,'\\/'));
+
 $enterPoint = array_shift($requestUri);
 
 # fix 4 USA host
