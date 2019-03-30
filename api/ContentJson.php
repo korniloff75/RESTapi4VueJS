@@ -22,11 +22,9 @@ class ContentJson extends Api
 
 
 		$this->dataObj->db = [
-			'menu' => $cache->get('menu.htm', function() {
+			/* 'menu' => $cache->get('menu.htm', function() {
 				return $this->$contentObj->createMenu();
-			}),
-
-			// 'main_' => !empty($_REQUEST['page']) ? file_get_contents(CONTENT_DIR . ($_REQUEST['page'])) : '', // Нужно определить контент по умолчанию
+			}), */
 
 			'main' => [
 				'title' => $this->currentItem['data']['title'],
@@ -38,7 +36,7 @@ class ContentJson extends Api
 		foreach($this->currentItem['path'] as $path) {
 			$path = BASE_DIR . "/$path";
 			include_once($path);
-			// print_r($path);
+			print_r($path);
 		}
 		$this->dataObj->db['main']['body'] = ob_get_clean();
 

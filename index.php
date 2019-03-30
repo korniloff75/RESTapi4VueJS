@@ -32,7 +32,7 @@ $CurrentInMap = $ContentObj->getFromMap();
 	<title><?=$CurrentInMap['data']['title']?></title>
 	<link rel="stylesheet" href="/templates/core.css">
 
-	<script src="/<?=FRONT_DIR?>/js/vue/v2.6.10.js"></script>
+	<script src="/<?=FRONT_DIR?>/js/Vue/v2.6.10.js"></script>
 
 	<script src="/<?=FRONT_DIR?>/js/axios/0.18.0/axios.min.js"></script>
 	<link rel="stylesheet" href="css/styles.css">

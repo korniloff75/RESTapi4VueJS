@@ -17,10 +17,18 @@ class ParseContent
 		$this->run($path);
 
 		# Open map's file
-		$ContentObj = new DbJSON('/db/ContentMap.json');
+		$cache = new Caching;
+		# Define ContentMap
+		$this->ContentMap = json_decode($cache->get('ContentMap.json', function() {
+			return $this->toArray();
+		}), 1);
+		$ContentObj = null;
+
+		// $ContentObj = new DbJSON('/db/ContentMap.json');
 
 		# Обновляем базу при заходе через корневой index.php
-		if(\DEV && realpath('') === realpath(BASE_DIR)) {
+		/* if(\DEV && realpath('') === realpath(BASE_DIR)) {
+			# Rewrite map's file
 			$ContentObj->replace($this->toArray());
 		}
 		elseif(!count($ContentObj->db))
@@ -31,9 +39,9 @@ class ParseContent
 		else
 		{
 
-		}
+		} */
 		# Define ContentMap
-		$this->ContentMap = $ContentObj->db;
+		// $this->ContentMap = $ContentObj->db;
 
 	}
 
@@ -200,12 +208,12 @@ class ParseContent
 			$data = $child['data'] ?? [];
 			// var_dump($child);
 			if(!empty($child['path'])) {
-				foreach($child['path'] as $path) {
-					// var_dump($path);
-					$path = str_ireplace(CONTENT_DIRNAME . DIRECTORY_SEPARATOR, '', $path);
+				$path = $child['path'][0];
 
-					$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
-				}
+				// var_dump($path);
+				$path = str_ireplace(CONTENT_DIRNAME . DIRECTORY_SEPARATOR, '', $path);
+
+				$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 			}
 
 			if(!empty($child['children'])) {

@@ -47,6 +47,7 @@ class Caching {
 		$path = $this->fixPath($path);
 
 		$data = is_string($callback) && !function_exists($callback) ? $callback : $callback();
+		$data = is_string($data) ? $data : \DbJSON::toJSON($data);
 
 		if(@file_put_contents($path, $data)) {
 			return $data;
