@@ -6,7 +6,7 @@ define('BASE_DIR', __DIR__);
 define('CACHE_DIR', BASE_DIR . '/cache');
 define('FRONT_DIR', 'frontendVueJS');
 define('CONTENT_DIRNAME', 'content');
-define('CONTENT_DIR', BASE_DIR . '/content');
+define('CONTENT_DIR', BASE_DIR . '/' . CONTENT_DIRNAME);
 
 if(\DEV)
 {

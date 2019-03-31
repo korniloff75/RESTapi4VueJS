@@ -30,12 +30,18 @@ abstract class Api
 		$this->method = $_SERVER['REQUEST_METHOD'];
 
 		if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
-			if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
-				$this->method = 'DELETE';
-			} elseif ($_SERVER['HTTP_X_HTTP_METHOD'] == 'PUT') {
-				$this->method = 'PUT';
-			} else {
-				throw new Exception("Unexpected Header");
+			switch ($_SERVER['HTTP_X_HTTP_METHOD']) {
+				case 'DELETE':
+					$this->method = 'DELETE';
+					break;
+
+				case 'PUT':
+					$this->method = 'PUT';
+					break;
+
+				default:
+					throw new Exception("Unexpected Header");
+					break;
 			}
 		}
 

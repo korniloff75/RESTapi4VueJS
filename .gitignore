@@ -9,6 +9,7 @@ node_modules
 *.xml
 *.gz
 */ContentMap.json*
+/content_my
 
 # local env files
 .env.local

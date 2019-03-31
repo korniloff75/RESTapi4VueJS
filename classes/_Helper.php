@@ -10,7 +10,7 @@ class H {
 	{
 
 		$uri = explode('?', trim($_SERVER['REQUEST_URI'],'\\/'))[0];
-		self::$File = \Path::fromRoot('content/' . $uri);
+		self::$File = \Path::fromRoot(CONTENT_DIRNAME . '/' . $uri);
 
 		self::$Dir = dirname(self::$File) . '/';
 	}
