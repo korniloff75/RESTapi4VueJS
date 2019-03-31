@@ -1,7 +1,7 @@
 <?php
 # Настройки display_errors etc.
 require_once '../commonStart.php';
-
+require_once BASE_DIR . '/classes/Caching.php';
 
 # Разбираем параметры, разделённые слешем
 $requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];
@@ -16,6 +16,8 @@ $apiName = ucfirst(array_shift($requestUri));
 $id = array_shift($requestUri) ?? null;
 
 ob_start();
+
+// var_export(realpath(BASE_DIR . '/classes/Caching.php'));
 
 try {
 	// echo '<pre>';
@@ -39,7 +41,7 @@ try {
 	// echo '</pre>';
 
 } catch (Exception $e) {
-	echo json_encode([
+	echo \Caching::toJSON([
 		'error' => $e->getMessage()
 	]);
 }

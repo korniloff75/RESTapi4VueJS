@@ -1,17 +1,17 @@
 <?php
 class Caching {
-	// protected
-	// 	$path
+	protected
+		$cacheDir;
 
 	public function __construct()
 	{
 		# Create cache folder
-		if(!file_exists(BASE_DIR . '/cache')) mkdir(BASE_DIR . '/cache');
+		if(!file_exists($this->cacheDir = CACHE_DIR)) mkdir($this->cacheDir);
 	}
 
 	private function fixPath($path)
 	{
-		$beginPath = BASE_DIR . '/cache/';
+		$beginPath = $this->cacheDir . '/';
 		return stripos($path, $beginPath) === 0 ? $path : $beginPath . $path;
 	}
 
@@ -47,11 +47,18 @@ class Caching {
 		$path = $this->fixPath($path);
 
 		$data = is_string($callback) && !function_exists($callback) ? $callback : $callback();
-		$data = is_string($data) ? $data : \DbJSON::toJSON($data);
+		$data = is_string($data) ? $data : self::toJSON($data);
 
 		if(@file_put_contents($path, $data)) {
 			return $data;
 		}
 		else throw new LogicException("Не удалось обновить кэш в файле $path", 403);
+	}
+
+
+	# Массив в JSON
+	public static function toJSON(array $arr)
+	{
+		return json_encode(($arr), JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
 	}
 } // Caching

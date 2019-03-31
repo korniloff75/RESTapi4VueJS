@@ -32,7 +32,57 @@ class H {
 		return strtr($s, $translit);
 	}
 
-	private static function getPath()
+	public static function remove($path)
+	{
+		$success = file_exists($path) ? false : true;
+		if(is_dir($path)) {
+			if ($objs = glob($path."/*")) {
+				 foreach($objs as $item) {
+					 (__METHOD__)($item);
+					//  is_dir($obj) ? removeDirectory($obj) : unlink($obj);
+				 }
+			}
+			$success = rmdir($path);
+		}
+		elseif(is_file($path)) {
+			$success = unlink($path);
+		}
+		return $success;
+	}
+
+
+	public static function shead ($s, $o = '')
+
+	{
+		header('Content-type: text/html; charset=utf-8');
+
+		if ($s == 401)
+			header('HTTP/1.0 401 Unauthorized');
+
+		elseif ($s == 404)
+		{
+			self::remove(BASE_DIR . '/' . CACHE_DIR);
+			header('HTTP/1.0 404 Not Found');
+			$o = "<div>
+				<p>Данная страница не найдена...</p>
+				<p>Пожалуйсла, перейдите на <a href=\"/\">Главную страницу</a> сайта.</p>
+			<div>";
+		}
+		elseif ($s == 403)
+		{
+			header('HTTP/1.0 403 Forbidden');
+		}
+
+		$CurrentInMap['data']['title'] = "Error $s";
+
+		if(!include("templates/errorpages/$s.htm"))
+		 $o = '<h1>' . $CurrentInMap['data']['title'] . "</h1>\n" . $o;
+
+		 die($o);
+
+	}
+
+	public static function getPath()
 	{
 		// return ;
 	}

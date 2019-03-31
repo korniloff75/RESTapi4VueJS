@@ -10,11 +10,14 @@ class ParseContent
 		$fileExts = ['htm', 'html'], # allowed extensions
 		$serveDirs = ['assets', 'img'];
 
+	/**
+	 * @path - путь к папке с контентом
+	 */
 	public function __construct($path=null)
 	{
-		$this->path = $path ?? "{CONTENT_DIRNAME}/";
+		$this->path = $path ?? CONTENT_DIR . "/";
 
-		$this->run($path);
+		$this->run();
 
 		# Open map's file
 		$cache = new Caching;
@@ -22,36 +25,15 @@ class ParseContent
 		$this->ContentMap = json_decode($cache->get('ContentMap.json', function() {
 			return $this->toArray();
 		}), 1);
-		$ContentObj = null;
-
-		// $ContentObj = new DbJSON('/db/ContentMap.json');
-
-		# Обновляем базу при заходе через корневой index.php
-		/* if(\DEV && realpath('') === realpath(BASE_DIR)) {
-			# Rewrite map's file
-			$ContentObj->replace($this->toArray());
-		}
-		elseif(!count($ContentObj->db))
-		{
-			# Create map's file
-			$ContentObj->set($this->toArray());
-		}
-		else
-		{
-
-		} */
-		# Define ContentMap
-		// $this->ContentMap = $ContentObj->db;
 
 	}
 
 
-	/**
-	 * @path - путь к папке с контентом
-	 */
-	public function run($path)
+	public function run()
 	{
-		$allInDir = new RecursiveDirectoryIterator ($path , FilesystemIterator::SKIP_DOTS);
+		$allInDir = new RecursiveDirectoryIterator ($this->path , FilesystemIterator::SKIP_DOTS);
+
+		// var_dump($allInDir);
 
 		#
 		$allInDirFilter = new RecursiveCallbackFilterIterator (
@@ -93,13 +75,14 @@ class ParseContent
 				return false;
 			}
 		); // $allInDirFilter
-		// $tree = new RecursiveTreeIterator ($allInDir);
+		// print_r (new RecursiveTreeIterator ($allInDir));
 
 		# Итератор щля отфильтрованный файлов
 		$this->allInDirFilterIterator = new RecursiveIteratorIterator($allInDirFilter);
 		// , RecursiveIteratorIterator::SELF_FIRST
 
 		// print_r("\n===\nallFilterFoldersIterator\n===\n");
+		// var_dump($this->allInDirFilterIterator);
 
 	} // run
 
@@ -110,28 +93,51 @@ class ParseContent
 	 */
 	public function getFromMap($url=null)
 	{
-		$url = $url ?? $_SERVER['REQUEST_URI'];
+		$url = \Path::fixSlashes($url ?? $_SERVER['REQUEST_URI']);
 
 		# Define default page
 		if($url === '/') {
 			$this->allInDirFilterIterator->rewind();
-			// var_dump($this->allInDirFilterIterator->current()->isFile(), $this->allInDirFilterIterator->current()->getPathname());
+			/* var_dump(
+				$this->allInDirFilterIterator->current()->getPathname(),
+				$this->allInDirFilterIterator->current()->getPath()
+			); */
+
+			while($this->allInDirFilterIterator->current()->getPath() === CONTENT_DIRNAME) {
+				// var_dump($this->allInDirFilterIterator->current()->getPathname());
+				$this->allInDirFilterIterator->next();
+			}
 
 			$url = $this->allInDirFilterIterator->current()->getPathname();
 			$url = str_replace(CONTENT_DIRNAME, '', $url);
 		}
 
-		$url = \Path::fixSlashes($url);
-
 		$path = explode('/', dirname(trim($url,'\\/')));
+
 		// var_dump($url, $path);
 
-		$ev = '$cur = $this->ContentMap';
+		$ev = '$this->ContentMap';
 		foreach($path as $i) {
-		 $ev .= "['children']['$i']";
+			$ev .= "['children']['$i']";
+			/* eval("\$check = $ev;");
+
+		 	if(empty($check)) {
+				// print_r(realpath(CACHE_DIR . '/'));
+				if(\H::remove(CACHE_DIR)) {
+					break;
+					$this->__construct($this->path);
+					// var_dump(__METHOD__);
+					return (__METHOD__)($url);
+				}
+				die();
+			} */
 		}
 
-		eval($ev . ';');
+		eval("\$cur = $ev;");
+
+		if(empty($cur)) {
+			\H::shead(404);
+		}
 
 		$cur['data'] = array_merge([
 			'title' => basename(dirname($cur['path'][0])),

@@ -121,7 +121,7 @@ var Mixins = {
 				// Делим документ на скрипты и html
 				Vue.store.parsedPage = new Vue.H.ParseJS(response.data.body);
 
-				document.title = response.data.title;
+				document.title = response.data.data.title;
 
 				Vue.store.parsedPage.html = '<h1>' + document.title + '</h1>\n' + Vue.store.parsedPage.html;
 

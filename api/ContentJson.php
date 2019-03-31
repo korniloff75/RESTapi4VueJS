@@ -5,46 +5,38 @@ class ContentJson extends Api
 {
 	public $apiName = __CLASS__;
 	protected
-		$dbPath = '../db/',
 		$contentObj,
-		$currentItem,
-		$cache;
+		$db;
 
 	public function __construct($id = null)
 	{
-		$cache = new Caching;
+		$this->contentObj = new \ParseContent();
+		$currentItem = $this->contentObj->getFromMap($_REQUEST['page'] ?? null);
 
-		$this->dataObj = new \DbJSON;
-		$this->contentObj = new \ParseContent('../content/');
-		$this->currentItem = $this->contentObj->getFromMap($_REQUEST['page'] ?? null);
-
-		// print_r($this->currentItem);
-
-
-		$this->dataObj->db = [
+		$this->db = [
 			/* 'menu' => $cache->get('menu.htm', function() {
 				return $this->$contentObj->createMenu();
 			}), */
 
 			'main' => [
-				'title' => $this->currentItem['data']['title'],
+				'data' => $currentItem['data'],
 				'body' => ''
 			]
 		];
 
 		ob_start();
-		foreach($this->currentItem['path'] as $path) {
+		foreach($currentItem['path'] as $path) {
 			$path = BASE_DIR . "/$path";
 			include_once($path);
-			print_r($path);
+			// print_r($path);
 		}
-		$this->dataObj->db['main']['body'] = ob_get_clean();
+		$this->db['main']['body'] = ob_get_clean();
 
-		// print_r($this->dataObj->db['main']);
+		// print_r($currentItem);
 
 		parent::__construct($id);
 
-			// print_r($this->dataObj->db);
+		// print_r($this->dataObj->db);
 	}
 
 	/**
@@ -58,7 +50,7 @@ class ContentJson extends Api
 	{
 		// print_r($this->dataObj->get());
 		return $this->response(
-			$this->dataObj->get(),
+			$this->db,
 			200
 		);
 	}
@@ -72,7 +64,7 @@ class ContentJson extends Api
 	public function viewAction()
 	{
 		// print_r($this->id . "\n");
-		return $this->id && ($data = $this->dataObj->get($this->id))
+		return $this->id && ($data = $this->db[$this->id])
 		? $this->response($data, 200)
 		: $this->response('Data not found', 404);
 	}

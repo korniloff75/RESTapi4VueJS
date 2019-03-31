@@ -4,8 +4,7 @@ require_once BASE_DIR . '/classes/DbJSON.php';
 abstract class Api
 {
 	protected
-		$dbPath = 'db/',
-		$dataObj, // Object new DbJSON
+		$db,
 		$headers = [
 			"Access-Control-Allow-Orgin: *",
 			"Access-Control-Allow-Methods: *",
@@ -16,11 +15,11 @@ abstract class Api
 		],
 		$method = '', //GET|POST|PUT|DELETE
 		$id = null,
+		$requestParams = [],
 		$action = ''; //Название метода для выполнения
 
 	public
-		$apiName = '', // Имя дочернего класса
-   	$requestParams = [];
+		$apiName = ''; // Имя дочернего класса
 
 
 	public function __construct($id = null)
@@ -30,6 +29,7 @@ abstract class Api
 
 		# Определение метода запроса
 		$this->method = $_SERVER['REQUEST_METHOD'];
+
 		if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
 			if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
 				$this->method = 'DELETE';
@@ -42,22 +42,18 @@ abstract class Api
 
 		echo $this->run();
 
-		$response = ob_get_clean();
+		$finalResponse = ob_get_clean();
 
 		foreach($this->headers as $h) {
 			header($h);
 		}
-		echo $response;
+		echo $finalResponse;
 
   }
 
 
 	protected function run()
 	{
-		# Открываем базу
-		$this->dataObj = $this->dataObj ?? new \DbJSON($this->dbPath . 	$this->apiName . '.json');
-		// print_r($this->dataObj);
-
    	# Определение действия для обработки
    	$this->action = $this->getAction();
 
@@ -74,13 +70,14 @@ abstract class Api
 		return $this->requestParams[$name] ?? null;
 	}
 
+
 	protected function response($data, $status = 500)
 	:string
 	{
 		$header = "HTTP/1.1 " . $status . " " . $this->requestStatus($status);
 		$this->headers[] = $header;
 
-		return is_string($data) ? $data : \DbJSON::toJSON($data);
+		return is_string($data) ? $data : \Caching::toJSON($data);
   }
 
 	private function requestStatus($code)
