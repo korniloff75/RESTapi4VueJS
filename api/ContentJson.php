@@ -10,8 +10,10 @@ class ContentJson extends Api
 
 	public function __construct($id = null)
 	{
+		global $Page;
+		
 		$this->contentObj = new \ParseContent();
-		$currentItem = $this->contentObj->getFromMap($_REQUEST['page'] ?? null);
+		$currentItem = $this->contentObj->getFromMap($Page);
 
 		$this->db = [
 			/* 'menu' => $cache->get('menu.htm', function() {
@@ -49,10 +51,7 @@ class ContentJson extends Api
 	:string
 	{
 		// print_r($this->dataObj->get());
-		return $this->response(
-			$this->db,
-			200
-		);
+		return $this->response( $this->db, 200 );
 	}
 
 	/**
@@ -65,8 +64,8 @@ class ContentJson extends Api
 	{
 		// print_r($this->id . "\n");
 		return $this->id && ($data = $this->db[$this->id])
-		? $this->response($data, 200)
-		: $this->response('Data not found', 404);
+		? $this->response( $data, 200 )
+		: $this->response( 'Data not found', 404 );
 	}
 
 	function createAction() {}

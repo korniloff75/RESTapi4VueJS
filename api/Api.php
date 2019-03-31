@@ -1,5 +1,4 @@
 <?php
-require_once BASE_DIR . '/classes/DbJSON.php';
 
 abstract class Api
 {

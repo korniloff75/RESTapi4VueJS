@@ -8,10 +8,30 @@ class H {
 
 	private function __construct()
 	{
-		self::$File = \Path::fromRoot('content/' . trim($_SERVER['REQUEST_URI'],'\\/'));
+
+		$uri = explode('?', trim($_SERVER['REQUEST_URI'],'\\/'))[0];
+		self::$File = \Path::fromRoot('content/' . $uri);
+
 		self::$Dir = dirname(self::$File) . '/';
 	}
 
+	/* public static function is(string $prop)
+	{
+		$prop = strtolower($prop);
+		$defines = [
+			'ajax' => function() {
+				return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+				&& !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+				&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+			}
+		];
+
+		$tmp['notes'][] = !in_array($prop, $defines);
+		if (!in_array($prop, $defines)) return null;
+
+		return $defines[$prop]();
+	}
+ */
 	public static function translit(string $s, $napr = 0)
 	:string
 	{

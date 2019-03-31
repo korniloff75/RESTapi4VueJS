@@ -83,7 +83,7 @@ Vue.H.ParseJS.prototype.eval = function() {
 			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 			eval(i.innerHTML);
 		}
-			console.log('this in eval = ', this);
+			// console.log('this in eval = ', this);
 
 	});
 

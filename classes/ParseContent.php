@@ -135,7 +135,7 @@ class ParseContent
 
 		eval("\$cur = $ev;");
 
-		if(empty($cur)) {
+		if(empty($cur) || empty($cur['path'])) {
 			\H::shead(404);
 		}
 

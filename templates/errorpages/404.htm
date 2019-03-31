@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>404</title>
+<style type="text/css">
+	body{
+		padding: 27px;
+	}
+	.wrapper {
+		width: 280px;
+		margin: 0 auto;
+		padding: 30px;
+		border: 1px #CCC solid;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		-moz-box-shadow: 1px 1px 4px #CCC;
+		-webkit-box-shadow: 1px 1px 4px #CCC;
+		box-shadow: 1px 1px 4px #CCC;
+		background-color: #FCFCFC;
+	}
+	.header {
+		text-align: center;
+		font: bold 330%/100% Georgia, Serif;
+		position: relative;
+		color: #464646;
+		margin: 0 0 30px 0;
+	}
+	.message {
+	}
+</style>
+
+
+<script>
+//== Вывод текста "печатной машинкой"
+String.prototype.delayingWrite = function (obj, delay, cb, timeLast) {
+	if (!obj) return 0;
+	if (this.length) {
+		obj.wr = 1;
+		obj.textContent += this.charAt(0);
+		var s = this.substr(1);
+		setTimeout(function () { s.delayingWrite(obj, delay, cb, timeLast); }, delay);
+	} else {
+		obj.wr = 0;
+		if (typeof cb === 'function') {
+			setTimeout(cb, timeLast || delay * 10);
+		}
+	}
+}
+</script>
+</head>
+
+<body>
+<div class="wrapper">
+	<h1 class="header">404</h1>
+	<p class="message">Страница не найдена или временно не доступна.</p>
+</div>
+<div align="center" style="padding: 10px;">
+	<p style="text-align:center;"><a href="/" title="Перейти вручную">Главная страница</a></p>
+	<textarea id="t404" rows="12" cols="60" wrap="soft" style="overflow: auto; font:18px monospace; color:#fff; background: #135;"></textarea>
+</div>
+<script type="text/javascript">
+[
+	"Эта страница не найдена на сайте. Возможно, она была перемещена или удалена.",
+	"Если Вы еще не перешли по ссылке выше, сейчас я Вас переведу на главную страницу сайта, откуда Вы сможете воспользоваться меню.",
+	'...'
+].join('\r\n').delayingWrite(document.querySelector('#t404') ,80, function() {
+	location.replace("/");
+}, 700);
+</script>
+
+</body>
+</html>

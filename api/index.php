@@ -15,9 +15,14 @@ if($enterPoint === 'restAPI') $enterPoint = array_shift($requestUri);
 $apiName = ucfirst(array_shift($requestUri));
 $id = array_shift($requestUri) ?? null;
 
+$Page = $_REQUEST['page'] ?? null;
+\H::$Dir = dirname(CONTENT_DIRNAME . "/$Page") . '/';
+
 ob_start();
 
-// var_export(realpath(BASE_DIR . '/classes/Caching.php'));
+if(\DEV) foreach($tmp['notes'] ?? [] as $note) {
+	print_r($note);
+}
 
 try {
 	// echo '<pre>';
