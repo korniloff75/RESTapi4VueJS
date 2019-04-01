@@ -3,6 +3,7 @@ if (version_compare(PHP_VERSION, '7.0', '<') ) die("<h3>Обновите вер�
 
 define('DEV', true);
 define('BASE_DIR', __DIR__);
+define('TEMPLATE', 'templates/__default__');
 define('CACHE_DIR', BASE_DIR . '/cache');
 define('FRONT_DIR', 'frontendVueJS');
 define('CONTENT_DIRNAME', 'content');
