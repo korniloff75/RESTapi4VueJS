@@ -140,7 +140,7 @@ var Mixins = {
 	// beforeUpdate
 	updated() {
 		console.log(
-			'\nComponent ' + this.$options._componentTag + ' is updated\n',
+			'\n==Mixins==\nComponent ' + this.$options._componentTag + ' is updated\n',
 		);
 	},
 }; // Mixins
@@ -157,7 +157,7 @@ Vue.component('menu-items', {
 	mixins: [Mixins],
 
 	created() {
-		// Доработать исполнение скриптов
+		// Навигация по истории
 		window.onpopstate = e => {
 			// Vue.store.parsedPage = e.state.parsedPage;
 			this.updateContent(e.state.href);
@@ -222,12 +222,15 @@ var mainContent = Vue.component('main-content',  {
 	},
 
 	updated() {
+		// Работает при каждом обновлении
 		console.log(
 			'\nComponent ' + this.$options._componentTag + ' is updated\n',
 			// this
 		);
 
 		// this.$nextTick(Vue.store.parsedPage.eval.bind(Vue.store.parsedPage));
+
+		// Исполняем скрипты
 		this.store.parsedPage.eval();
 	},
 
@@ -235,8 +238,8 @@ var mainContent = Vue.component('main-content',  {
 		// Не работает
 		enter(el, done) {
 			done();
-			Vue.store.parsedPage.eval();
-			console.log('transition enter!');
+			// Vue.store.parsedPage.eval();
+			// console.log('transition enter!');
 		}
 	},
 
@@ -261,6 +264,7 @@ var mainContent = Vue.component('main-content',  {
 
 (function() {
 	// Удаляем JS из содержимого [is=main-content]
+	// до запуска Vue
 	var main = document.querySelector('[is=main-content]');
 
 	Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
@@ -291,20 +295,6 @@ new Vue({
 			// '\n vm.$el  = ',  this.$el,
 		);
 
-		// Исполняем скрипты
-		this.$nextTick(function() {
-			console.log(
-				'\n$root.$nextTick\n',
-				// _thisComp.$root.parsedPage
-			);
-			this.store.parsedPage.eval();
-		});
-
 	}, // created
-
-	updated() {
-		// Не работает
-		console.log('\n$root is updated\n');
-	},
 
 }); // #app

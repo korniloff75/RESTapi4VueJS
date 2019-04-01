@@ -11,6 +11,7 @@ $CurrentInMap = $ContentObj->getFromMap();
 
 
 # Формируем простой вывод для ПС
+# и первой загрузки SPA
 require_once(TEMPLATE . "/index.php");
 
 $response = ob_get_clean();
