@@ -112,9 +112,14 @@ class ParseContent
 			$url = str_replace(CONTENT_DIRNAME, '', $url);
 		}
 
-		$path = explode('/', dirname(trim($url,'\\/')));
+		$url = \Path::fixSlashes($url);
+		\H::$URI = dirname(trim($url,'\\/'));
+		\H::$File = \Path::fromRoot(CONTENT_DIRNAME . '/' . $url);
 
-		// var_dump($url, $path);
+		\H::$Dir = dirname(\H::$File) . '/';
+		$path = explode('/', \H::$URI);
+
+		// var_dump($url, \H::$URI, \H::$File, \H::$Dir);
 
 		$ev = '$this->ContentMap';
 		foreach($path as $i) {
@@ -168,7 +173,7 @@ class ParseContent
 
 			$item = [
 				'content' => [$splFileInfo->getFilename()],
-				'path' => [$pathname]
+				'path' => [\Path::fixSlashes($pathname)]
 			];
 
 			$data = $splFileInfo->getPath() . "/data.json";
@@ -217,7 +222,7 @@ class ParseContent
 				$path = $child['path'][0];
 
 				// var_dump($path);
-				$path = str_ireplace(CONTENT_DIRNAME . DIRECTORY_SEPARATOR, '', $path);
+				$path = str_ireplace(CONTENT_DIRNAME . '/', '', $path);
 
 				$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 			}

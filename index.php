@@ -20,7 +20,7 @@ $response = ob_get_clean();
 header('Content-type: text/html; charset=utf-8');
 echo $response;
 
-exit(\DEV? profile('base'): null);
+die(\DEV? \H::profile('base'): null);
 #####
 
 echo '<pre>';

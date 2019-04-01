@@ -3,16 +3,16 @@
 
 class H {
 	public static
-		$File,
-		$Dir;
+		$tmp = [],
+		# defined in ParseContent::getFromMap()
+		$URI, # Путь к текущей директории относительно CONTENT_DIR
+		$File, # Путь к файлу относительно ROOT
+		$Dir; # Путь к текущей директории относительно ROOT
+		# / defined in ParseContent::getFromMap()
 
 	private function __construct()
 	{
-
-		$uri = explode('?', trim($_SERVER['REQUEST_URI'],'\\/'))[0];
-		self::$File = \Path::fromRoot(CONTENT_DIRNAME . '/' . $uri);
-
-		self::$Dir = dirname(self::$File) . '/';
+		self::profile();
 	}
 
 	/* public static function is(string $prop)
@@ -106,6 +106,29 @@ class H {
 	{
 		// return ;
 	}
+
+	public static function profile(string $rem='base')
+	{
+		if(!\DEV) return '';
+
+		self::$tmp['profile'] = self::$tmp['profile'] ?? [];
+
+		# Start value
+		if(empty(self::$tmp{'profile'}[$rem]))
+		{
+			self::$tmp{'profile'}[$rem] = microtime(true);
+		}
+		# Computed value
+		else
+		{
+			$info = '<p>Page generation - ' . bcsub(microtime(true), self::$tmp['profile']['base'], 5)*1000 . 'ms | Memory usage - now ( '. round (memory_get_usage()/1024) . ') max (' . round (memory_get_peak_usage()/1024) . ') Kbytes</p>';
+
+			unset(self::$tmp{'profile'}[$rem]);
+			return  "<div class='core bar'><b>Technical Info $rem </b>: $info</div>";
+		}
+
+	}
+
 
 	# Singlton methods
 	protected static $_instance;
