@@ -59,6 +59,6 @@ class Caching {
 	# Массив в JSON
 	public static function toJSON(array $arr)
 	{
-		return json_encode(($arr), JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+		return json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
 	}
 } // Caching

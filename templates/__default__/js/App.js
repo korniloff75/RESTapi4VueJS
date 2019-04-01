@@ -79,11 +79,12 @@ Vue.H.ParseJS.prototype.eval = function() {
 			s.src = i.src;
 			document.head.appendChild(s);
 			links.push(s);
-		} else {
+		}
+		else {
 			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 			eval(i.innerHTML);
 		}
-			// console.log('this in eval = ', this);
+		console.log('this in eval = ', this);
 
 	});
 
@@ -177,7 +178,7 @@ Vue.component('menu-items', {
 			if(!t) return;
 
 			var li = t.closest('li'),
-				hrefAjax = t.getAttribute('data-href'),
+				hrefAjax = decodeURIComponent(t.getAttribute('data-href')),
 				active = this.$el.querySelector('li.active'),
 				href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
 
@@ -234,15 +235,6 @@ var mainContent = Vue.component('main-content',  {
 		this.store.parsedPage.eval();
 	},
 
-	methods: {
-		// Не работает
-		enter(el, done) {
-			done();
-			// Vue.store.parsedPage.eval();
-			// console.log('transition enter!');
-		}
-	},
-
 	// mode="out-in"
 	// mode="in-out"
 	// :css="false"
@@ -292,9 +284,13 @@ new Vue({
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
 		console.log(
 			'\n $root created\n',
-			// '\n vm.$el  = ',  this.$el,
+			'\n vm.store.parsedPage  = ',  this.store.parsedPage,
 		);
-
 	}, // created
+
+	mounted() {
+		// Исполняем скрипты
+		this.store.parsedPage.eval();
+	},
 
 }); // #app

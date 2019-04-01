@@ -26,15 +26,23 @@ ini_set('include_path', get_include_path() . PATH_SEPARATOR . BASE_DIR . '/class
 define('TEMPLATE', 'templates/__default__');
 define('CACHE_DIR', BASE_DIR . '/cache');
 define('FRONT_DIR', 'frontendVueJS');
-define('CONTENT_DIRNAME', 'content_my');
+define('CONTENT_DIRNAME', $_SERVER['SERVER_PORT'] == 90 ? 'content_my' : 'content');
 define('CONTENT_DIR', BASE_DIR . '/' . CONTENT_DIRNAME);
+
+if(!file_exists(CONTENT_DIR)) {
+	throw new Exception('Нет директории с контентом: ' . CONTENT_DIR, 500);
+}
+/* else {
+	var_dump(CONTENT_DIR, file_exists(CONTENT_DIR));
+} */
+// var_dump($_SERVER);
 
 
 # FIX pathes
 require_once 'Path.php';
 # Helper singleton
 require_once '_Helper.php';
-# Класс для работы с JSON-базами
+# Класс для работы с JSON-базами - DEPRECATED
 require_once 'DbJSON.php';
 # Класс для работы с папкой контента
 require_once 'ParseContent.php';

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="jsPlumbTest.css">
+
+	<style>
+		#drawingArea {
+			position: relative;
+		}
+		#container * {
+			border: 1px solid;
+			padding: 5px;
+		}
+
+	</style>
+</head>
+
+
+<body>
+
+<div id="task_menu" class="window menu">
+
+	<div class="menu_button_container">
+
+		<!-- <div id="add_first" class="button menu_button">Add First Task</div> -->
+
+	</div>
+
+	<button id="saveButton" class="button menu_button">Save</button>
+	<button id="loadButton" class="button menu_button">Load</button>
+</div>
+
+<!-- Drawing Field -->
+
+<div id="drawingArea" style="width:100%;min-height:500px;">
+
+</div>
+
+<!-- /Drawing Field -->
+
+
+<pre id="jsonOutput" style="width:100%;height:100px;"></pre>
+
+<script src="jquery-3.3.1.min.js"></script>
+<script src="jQ.addons.js"></script>
+<!-- <script src="jquery-ui.min.js"></script> -->
+<script src="jsplumb.min.js"></script>
+<script src="settings.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.10.0/ckeditor.js"></script>
+<!-- <script src="ui.js"></script> -->
+
+<script src="jsPlumbTest.js"></script>
+
+<script>
+	Gl.$htmlBase.on("click", "textarea", function () {
+	var editor = CKEDITOR.replace( this ),
+		cst;
+
+	// this.closest('.jtk-node').editor = editor;
+	editor.parent= this.closest('.jtk-node');
+	console.log('editor.parent = ', editor.parent);
+	/* AjexFileManager.init({
+		returnTo: 'ckeditor',
+		editor: editor
+	}); */
+
+});
+</script>
+
+
+</body>
+</html>

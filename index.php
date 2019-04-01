@@ -9,12 +9,18 @@ $ContentObj = new ParseContent(CONTENT_DIRNAME . "/");
 $Cache = new Caching;
 $CurrentInMap = $ContentObj->getFromMap();
 
+$SV = Caching::toJSON([
+	'DIR' => \H::$Dir,
+]);
 
 # Формируем простой вывод для ПС
 # и первой загрузки SPA
 require_once(TEMPLATE . "/index.php");
 
 $response = ob_get_clean();
+
+#
+$response = preg_replace("/<head>/", "$0<script>window.sv=$SV</script>", $response);
 
 # Отдаём для ПС
 header('Content-type: text/html; charset=utf-8');

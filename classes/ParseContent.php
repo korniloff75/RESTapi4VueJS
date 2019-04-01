@@ -173,7 +173,8 @@ class ParseContent
 
 			$item = [
 				'content' => [$splFileInfo->getFilename()],
-				'path' => [\Path::fixSlashes($pathname)]
+				'path' => [\Path::fixSlashes($pathname)],
+				// 'path' => [\Path::fixSlashes($pathname)],
 			];
 
 			$data = $splFileInfo->getPath() . "/data.json";
@@ -221,10 +222,10 @@ class ParseContent
 			if(!empty($child['path'])) {
 				$path = $child['path'][0];
 
+				$path = urlencode(str_ireplace(CONTENT_DIRNAME . '/', '', $path));
 				// var_dump($path);
-				$path = str_ireplace(CONTENT_DIRNAME . '/', '', $path);
 
-				$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \DbJSON::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
+				$nav .= "<li><a href='/$path' data-href='/$path' data-json='" . \Caching::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 			}
 
 			if(!empty($child['children'])) {

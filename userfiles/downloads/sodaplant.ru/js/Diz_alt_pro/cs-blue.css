@@ -1,0 +1,21 @@
+/*
+<?php
+header('Content-type: text/css');
+?>
+*/
+/*
+*,body, * * { background: #229 !important;
+	color: #ff3 ;
+}
+*/
+div#altBody, div#altObj ,div#altBody *{ background: #229 !important;
+	color: #ff3 ;
+}
+div#altBody * { background: unset;
+	color: unset ;
+}
+
+/*
+ http://www.mo57.ru
+*/
+div#altObj #wowslider-container1 {display:none !important;}

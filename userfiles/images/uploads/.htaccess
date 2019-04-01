@@ -1,0 +1,18 @@
+AddDefaultCharset UTF-8
+
+Options Indexes
+RewriteEngine off
+
+php_flag max_file_uploads 500
+
+<IfModule authz_core_module>
+Require all granted
+Require host js-master.ru
+Require local
+</IfModule>
+
+<IfModule !authz_core_module>
+order deny,allow
+deny from all
+allow from js-master.ru
+</IfModule>
