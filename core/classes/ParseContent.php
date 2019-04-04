@@ -144,6 +144,7 @@ class ParseContent
 		if(empty($cur) || empty($cur['path'])) {
 			\H::shead(404);
 		}
+		$cur['path'] = array_unique($cur['path'] );
 
 		$cur['data'] = array_merge([
 			'title' => basename(dirname($cur['path'][0])),
@@ -153,6 +154,15 @@ class ParseContent
 		if(!empty($cur['data']['seo'][1])) {
 			$cur['data']['seo'][1] = preg_replace("#,\s+?#", ',', $cur['data']['seo'][1]);
 		}
+
+		ob_start();
+		foreach($cur['path'] as $path) {
+			$path = \BASE_DIR . "/$path";
+			// var_dump($path, file_exists($path), realpath($path));
+			if(file_exists($path)) require_once($path);
+		}
+
+		$cur['content'] = ob_get_clean();
 
 		return $cur;
 	}

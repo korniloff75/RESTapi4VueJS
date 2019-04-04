@@ -6,8 +6,6 @@ var CC= CC || {
 		lineNumbers: 1
 	},
 
-	ajax: null,
-
 	parseCode: function(cA) { //== Parser
 		var tags= /(<|&lt;)([^!>]+?)(>|&gt;|[\s!])/g, ops=/\b(document|return|forEach|for|if|else|null|var)\b/g,
 		funcs= /\b(function|querySelector|querySelectorAll|use strict|console\..+?|onreadystatechange)\b/g; // /(<)([^>\s]+)([^>]*?>[\s\S]+)(<\/\2>)/g
@@ -108,7 +106,7 @@ var CC= CC || {
 			}
 		});
 
-	}, //== /exterCode
+	}, // exterCode
 
 
 	addLineNumbers: function (cA) {
@@ -143,7 +141,10 @@ var CC= CC || {
 		//== nE
 		(!window.hljs || !hljs.inited) && CC.exterCode();
 
-		console.log('CC inited\n', (CC.doc.querySelectorAll('body pre>code')));
+		console.log(
+			'CC inited\n',
+			// CC.doc.querySelectorAll('body pre>code')
+		);
 
 		[].forEach.call(CC.doc.querySelectorAll('body pre>code'), CC.parseCode);
 	}

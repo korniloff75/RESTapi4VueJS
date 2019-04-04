@@ -5,6 +5,9 @@
 	<script src="/<?=FRONT_DIR?>/js/axios/0.18.0/axios.min.js"></script>
 	<!-- <link rel="stylesheet" href="css/styles.css"> -->
 	<style>
+	nav li.active {
+		font-weight: 900;
+	}
 	main.fade-enter-active {
 		transition: opacity 1.2s;
 	}
@@ -23,18 +26,19 @@
 </head>
 
 <body>
-<header></header>
-<div id="app">
-<?php
-echo "<nav is=\"menu-items\">" . $Cache->get('menu.htm', $ContentObj->createMenu()) . "</nav>\n";
-echo "<main is=\"main-content\">";
-echo "<h1>{$CurrentInMap['data']['title']}</h1>";
-foreach($CurrentInMap['path'] as $path) {
-	if(file_exists($path)) require_once($path);
-}
 
-echo "</main>";
-?>
+<header></header>
+
+<div id="app">
+	<nav is="menu-items">
+		<?= $Cache->get('menu.htm', $ContentObj->createMenu())?>
+	</nav>
+
+	<main is="main-content">
+		<h1><?=$CurrentInMap['data']['title']?></h1>
+
+		<?=$CurrentInMap['content']?>
+	</main>
 </div> <!-- #app -->
 
 <script src="/<?=TEMPLATE?>/js/__defer/ColorCode.js" defer="defer"></script>

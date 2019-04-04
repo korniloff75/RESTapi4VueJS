@@ -11,7 +11,7 @@ class ContentJson extends Api
 	public function __construct($id = null)
 	{
 		global $Page;
-		
+
 		$this->contentObj = new \ParseContent();
 		$currentItem = $this->contentObj->getFromMap($Page);
 
@@ -22,17 +22,9 @@ class ContentJson extends Api
 
 			'main' => [
 				'data' => $currentItem['data'],
-				'body' => ''
+				'body' => $currentItem['content']
 			]
 		];
-
-		ob_start();
-		foreach($currentItem['path'] as $path) {
-			$path = BASE_DIR . "/$path";
-			include_once($path);
-			// print_r($path);
-		}
-		$this->db['main']['body'] = ob_get_clean();
 
 		// print_r($currentItem);
 

@@ -46,11 +46,11 @@ Vue.H = Vue.H || {
 
 		this.html = elem.documentElement.innerHTML;
 
-		console.log(
+		/* console.log(
 			// '\nParseJS.prototype = \n',
 			// this.prototype,
 			// this.__proto__
-		);
+		); */
 	}, // ParseJS
 
 
@@ -98,7 +98,7 @@ Vue.H.ParseJS.prototype.eval = function() {
 	// debugger;
 	console.log(
 		'Vue.H.ParseJS evaluation!\n',
-		'this in eval = ', this
+		// 'this in eval = ', this
 	);
 
 	delete this.scripts;
@@ -195,7 +195,7 @@ Vue.component('menu-items', {
 
 			var li = t.closest('li'),
 				hrefAjax = decodeURIComponent(t.getAttribute('data-href')),
-				active = this.$el.querySelector('li.active'),
+				// active = this.$el.querySelector('li.active'),
 				href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
 
 			this.updateContent(href);
@@ -208,17 +208,36 @@ Vue.component('menu-items', {
 			}, document.title, hrefAjax);
 
 			this.activeItem = li;
-			active && active.classList.remove('active');
-			li.classList.add('active');
+			// active && active.classList.remove('active');
+			// li.classList.add('active');
 		},
 
 	}, // methods
 
 	computed: {
-
+		findActive() {
+			var active = null;
+			[...document.querySelectorAll('nav a')].forEach(i=>{
+				if(window.location.pathname === decodeURIComponent(i.getAttribute('data-href'))) active = i.closest('li');
+			});
+			return active;
+		}
 	},
 
-	template: '<nav @click.prevent="navHandler" ><slot/></nav>'
+	mounted() {
+		this.activeItem = this.findActive;
+	},
+
+	beforeUpdate() {
+		this.activeItem && this.activeItem.classList.remove('active');
+	},
+
+	updated() {
+		console.log('this.activeItem = ', this.activeItem);
+		this.activeItem.classList.add('active');
+	},
+
+	template: '<nav @click.prevent="navHandler"><slot/></nav>'
 
 }); // menu-items
 
