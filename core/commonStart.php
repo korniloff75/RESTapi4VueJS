@@ -2,7 +2,6 @@
 if (version_compare(PHP_VERSION, '7.0', '<') ) die("<h3>Обновите версию PHP!</h3>");
 
 define('DEV', true);
-define('BASE_DIR', __DIR__);
 
 if(\DEV)
 {
@@ -20,7 +19,11 @@ if(\DEV)
 }
 ini_set('date.timezone', "Europe/Moscow");
 
-ini_set('include_path', get_include_path() . PATH_SEPARATOR . BASE_DIR . '/classes');
+ini_set(
+	'include_path', get_include_path()
+	. PATH_SEPARATOR . BASE_DIR . '/classes'
+	. PATH_SEPARATOR . BASE_DIR . '/core/classes'
+);
 
 
 define('TEMPLATE', 'templates/__default__');

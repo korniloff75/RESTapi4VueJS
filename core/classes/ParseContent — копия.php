@@ -123,6 +123,7 @@ class ParseContent
 
 		$ev = '$this->ContentMap';
 		foreach($path as $i) {
+			$i = str_ireplace('\'', "\\'", $i);
 			$ev .= "['children']['$i']";
 			/* eval("\$check = $ev;");
 

@@ -1,7 +1,8 @@
 <?php
+define('BASE_DIR', '..');
 # Настройки display_errors etc.
-require_once '../commonStart.php';
-require_once BASE_DIR . '/classes/Caching.php';
+require_once BASE_DIR . '/core/commonStart.php';
+require_once 'Caching.php';
 
 # Разбираем параметры, разделённые слешем
 $requestUri = explode('?', $_SERVER['REQUEST_URI'])[0];

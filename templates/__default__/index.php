@@ -1,27 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="author" content="Корнилов Павел">
-	<meta name="generator" content="KFF-3.0 -  js-master.ru">
-	<?php
-	# SEO
-	if(!empty($CurrentInMap['data']['seo'][0])) {
-		echo '<meta name="description" content="' . $CurrentInMap['data']['seo'][0] . '">';
-	}
-	if(!empty($CurrentInMap['data']['seo'][1])) {
-		echo '<meta name="keywords" content="' . $CurrentInMap['data']['seo'][1] . '>';
-	}
-	?>
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title><?=$CurrentInMap['data']['title']?></title>
-	<link rel="stylesheet" href="/templates/core.css">
-
 	<script src="/<?=FRONT_DIR?>/js/Vue/v2.6.10.js"></script>
-
 	<script src="/<?=FRONT_DIR?>/js/axios/0.18.0/axios.min.js"></script>
-	<link rel="stylesheet" href="css/styles.css">
+	<!-- <link rel="stylesheet" href="css/styles.css"> -->
 	<style>
 	main.fade-enter-active {
 		transition: opacity 1.2s;
@@ -54,6 +36,8 @@ foreach($CurrentInMap['path'] as $path) {
 echo "</main>";
 ?>
 </div> <!-- #app -->
+
+<script src="/<?=TEMPLATE?>/js/__defer/ColorCode.js" defer="defer"></script>
 <script src="/<?=TEMPLATE?>/js/App.js" defer="defer"></script>
 
 <footer>

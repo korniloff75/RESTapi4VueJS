@@ -2,12 +2,15 @@
 // var APIpath = 'http://restapi:90/';
 var APIpath = '/';
 
+Vue.config.productionTip = !sv.DEV;
+
 axios.defaults.headers.common = {
 	Accept: 'application/json'
 };
 
 
 // Common storage
+// Vue.set(vm, 'store', {});
 Vue.store = {
 
 };
@@ -31,6 +34,8 @@ Vue.H = Vue.H || {
 			elem = (new DOMParser()).parseFromString(elem, "text/html");
 		}
 		this.scripts = [];
+
+		_H.defer.eval(elem);
 
 		[].forEach.call(
 		elem.querySelectorAll('script'),
@@ -71,6 +76,10 @@ Vue.H = Vue.H || {
  * и возвращает на них ссылки DOM
  */
 Vue.H.ParseJS.prototype.eval = function() {
+	if(!this.scripts) {
+		debugger;
+		return;
+	}
 	// Ссылки на созданные скрипты для их удаления
 	var links = [];
 	this.scripts.forEach(i => {
@@ -84,9 +93,16 @@ Vue.H.ParseJS.prototype.eval = function() {
 			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 			eval(i.innerHTML);
 		}
-		console.log('this in eval = ', this);
 
 	});
+	// debugger;
+	console.log(
+		'Vue.H.ParseJS evaluation!\n',
+		'this in eval = ', this
+	);
+
+	delete this.scripts;
+	// debugger;
 
 	Vue.store.scriptLinks = links;
 	return links;
@@ -216,10 +232,12 @@ var mainContent = Vue.component('main-content',  {
 	},
 
 	beforeUpdate() {
+		console.log('mainContent\nbeforeUpdate');
 		// Clean old scripts
 		Vue.store.scriptLinks && Vue.store.scriptLinks.forEach(i=>{
 			i.remove();
-		})
+		});
+
 	},
 
 	updated() {
@@ -232,6 +250,7 @@ var mainContent = Vue.component('main-content',  {
 		// this.$nextTick(Vue.store.parsedPage.eval.bind(Vue.store.parsedPage));
 
 		// Исполняем скрипты
+		// debugger;
 		this.store.parsedPage.eval();
 	},
 
@@ -267,7 +286,7 @@ var mainContent = Vue.component('main-content',  {
 
 
 //
-new Vue({
+var vm = new Vue({
 	el: '#app',
 
 	data: {
@@ -282,15 +301,22 @@ new Vue({
 	created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
-		console.log(
+		/* console.log(
 			'\n $root created\n',
 			'\n vm.store.parsedPage  = ',  this.store.parsedPage,
-		);
+		); */
 	}, // created
 
 	mounted() {
+		console.log(
+			'\n $root mounted\n',
+			'\n_H.defer = ', _H.defer);
+
 		// Исполняем скрипты
+		// this.$nextTick(this.store.parsedPage.eval.bind(this.store.parsedPage));
 		this.store.parsedPage.eval();
+		// debugger;
+
 	},
 
 }); // #app

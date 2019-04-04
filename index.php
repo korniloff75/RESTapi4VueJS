@@ -1,15 +1,19 @@
 <?php
 ob_start();
 
+define('BASE_DIR', __DIR__);
+
 # Подключение классов, настройки display_errors etc...
-require_once 'commonStart.php';
+require_once 'core/commonStart.php';
 
 $ContentObj = new ParseContent(CONTENT_DIRNAME . "/");
 # Caching
 $Cache = new Caching;
 $CurrentInMap = $ContentObj->getFromMap();
 
+# Переменные для клиента
 $SV = Caching::toJSON([
+	'DEV' => \DEV,
 	'DIR' => \H::$Dir,
 ]);
 
@@ -17,24 +21,44 @@ $SV = Caching::toJSON([
 # и первой загрузки SPA
 require_once(TEMPLATE . "/index.php");
 
-$response = ob_get_clean();
+$Response = ob_get_clean();
+
+# ADD META
+$Meta = '<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Корнилов Павел">
+<meta name="generator" content="KFF-3.1.1 -  js-master.ru">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">';
+
+if(!empty($CurrentInMap['data']['seo'][0])) {
+	$Meta .= '<meta name="description" content="' . $CurrentInMap['data']['seo'][0] . '">';
+}
+if(!empty($CurrentInMap['data']['seo'][1])) {
+	$Meta .= '<meta name="keywords" content="' . $CurrentInMap['data']['seo'][1] . '">';
+}
+
+# ADD Title
+$Title = "\n<title>{$CurrentInMap['data']['title']}</title>\n";
 
 #
-$response = preg_replace("/<head>/", "$0<script>window.sv=$SV</script>", $response);
+$Response = preg_replace("/<head>/", "
+$0
+$Meta
+$Title
+<link rel=\"stylesheet\" href=\"/templates/core.css\">
+<script>window.sv=$SV</script>
+<script src=\"/" . FRONT_DIR . "/js/__Helper.js\"></script>
+", $Response);
 
 # Отдаём для ПС
 header('Content-type: text/html; charset=utf-8');
-echo $response;
+// echo $CurrentInMap['data']['title'];
+echo $Response;
 
 die(\DEV? \H::profile('base'): null);
 #####
 
 echo '<pre>';
-
-print_r(
-	trim($_SERVER['REQUEST_URI'],'\\/')
-);
-// print_r($ContentObj->ContentMap);
 
 echo "\n===============\n";
 
