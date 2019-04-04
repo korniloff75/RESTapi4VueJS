@@ -12,7 +12,7 @@ axios.defaults.headers.common = {
 // Common storage
 // Vue.set(vm, 'store', {});
 Vue.store = {
-
+	ajax: 0,
 };
 
 // Helper 4 Vue
@@ -40,7 +40,7 @@ Vue.H = Vue.H || {
 		[].forEach.call(
 		elem.querySelectorAll('script'),
 		i => {
-			this.scripts.push(i);
+			if(Vue.store.ajax) this.scripts.push(i);
 			i.remove();
 		});
 
@@ -133,7 +133,7 @@ var Mixins = {
 				// cache: 'default'
 			})
 			.then(function(response) {
-				_thisComp.$root.ajax = 1;
+				Vue.store.ajax = 1;
 
 				// Делим документ на скрипты и html
 				Vue.store.parsedPage = new Vue.H.ParseJS(response.data.body);
@@ -309,7 +309,6 @@ var vm = new Vue({
 	el: '#app',
 
 	data: {
-		ajax: 0,
 		store: Vue.store,
 	},
 
