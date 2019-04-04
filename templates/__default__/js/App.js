@@ -13,6 +13,8 @@ axios.defaults.headers.common = {
 // Vue.set(vm, 'store', {});
 Vue.store = {
 	ajax: 0,
+	menu: null,
+	activeItem: null,
 };
 
 // Helper 4 Vue
@@ -207,7 +209,7 @@ Vue.component('menu-items', {
 				// scripts: Vue.store.parsedPage.scripts,
 			}, document.title, hrefAjax);
 
-			this.activeItem = li;
+			Vue.store.activeItem = li;
 			// active && active.classList.remove('active');
 			// li.classList.add('active');
 		},
@@ -225,17 +227,11 @@ Vue.component('menu-items', {
 	},
 
 	mounted() {
-		this.activeItem = this.findActive;
+		Vue.store.menu = this.$el;
+		Vue.store.activeItem = this.findActive;
+		Vue.store.activeItem.classList.add('active');
 	},
 
-	beforeUpdate() {
-		this.activeItem && this.activeItem.classList.remove('active');
-	},
-
-	updated() {
-		console.log('this.activeItem = ', this.activeItem);
-		this.activeItem.classList.add('active');
-	},
 
 	template: '<nav @click.prevent="navHandler"><slot/></nav>'
 
@@ -251,20 +247,27 @@ var mainContent = Vue.component('main-content',  {
 	},
 
 	beforeUpdate() {
-		console.log('mainContent\nbeforeUpdate');
+		console.log(
+			'mainContent\nbeforeUpdate',
+			// '\nVue.store.activeItem = ', Vue.store.activeItem,
+		);
+
 		// Clean old scripts
 		Vue.store.scriptLinks && Vue.store.scriptLinks.forEach(i=>{
 			i.remove();
 		});
-
+		var active = Vue.store.menu.querySelector('li.active');
+		active && active.classList.remove('active');
 	},
 
 	updated() {
 		// Работает при каждом обновлении
 		console.log(
-			'\nComponent ' + this.$options._componentTag + ' is updated\n',
-			// this
+			'\nComponent ' + this.$options._componentTag + ' is updated',
+			'\nVue.store.activeItem = ', Vue.store.activeItem
 		);
+
+		Vue.store.activeItem.classList.add('active');
 
 		// this.$nextTick(Vue.store.parsedPage.eval.bind(Vue.store.parsedPage));
 
