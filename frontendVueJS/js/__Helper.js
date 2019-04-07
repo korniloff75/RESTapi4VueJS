@@ -203,9 +203,10 @@ window._H = {
 		tocs: [],
 		add: function(fn) {
 			var toc = fn.toString();
-			// console.log(toc);
 			if(this.tocs.indexOf(toc) !== -1) {
+				console.groupCollapsed(fn.name + 'in defer.add');
 				console.log('Функция ', toc, ' уже сохранена!');
+				console.groupEnd(fn.name + 'in defer.add');
 				return;
 			}
 			this.tocs.push(toc);

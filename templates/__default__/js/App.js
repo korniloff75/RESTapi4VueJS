@@ -291,7 +291,8 @@ var mainContent = Vue.component('main-content',  {
 
 	beforeUpdate() {
 		console.log(
-			'mainContent =====\nbeforeUpdate',
+			'\nComponent ' + this.$options._componentTag + ' =====',
+			'\nbeforeUpdate',
 			'\n_H.defer.cleaning',
 
 		);
@@ -313,9 +314,8 @@ var mainContent = Vue.component('main-content',  {
 		this.store.parsedPage.eval();
 
 		console.log(
-			'\nComponent ' + this.$options._componentTag + ' is updated',
+			'\nComponent ' + this.$options._componentTag + ' is updated!',
 			'\nVue.store.activeItem = ', Vue.store.activeItem,
-			'\n_H.defer = ', _H.defer
 		);
 
 	},
@@ -359,7 +359,9 @@ var vm = new Vue({
 
 		Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
 
-		console.log('Vue.store.parsedPage = ', Vue.store.parsedPage.origDoc.scripts);
+		console.log(
+			'$root vm beforeCreate ===',
+			'\nVue.store.parsedPage = ', Vue.store.parsedPage.origDoc.scripts);
 
 		main.innerHTML = '';
 	},
