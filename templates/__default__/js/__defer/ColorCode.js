@@ -141,12 +141,22 @@ var CC= CC || {
 		//== nE
 		(!window.hljs || !hljs.inited) && CC.exterCode();
 
+		var virt = doc.querySelectorAll('body pre>code');
+
+		[].forEach.call(virt, CC.parseCode);
+
+		[...document.querySelectorAll('body pre>code')].forEach((i, ind)=> {
+
+			var newI = document.importNode(virt[ind].parentNode, true);
+			i.parentNode.parentNode.replaceChild(newI, i.parentNode);
+		});
+
+
 		console.log(
 			'CC inited\n',
+			// virt,
 			// CC.doc.querySelectorAll('body pre>code')
 		);
-
-		[].forEach.call(CC.doc.querySelectorAll('body pre>code'), CC.parseCode);
 	}
 }; // CC
 
@@ -164,5 +174,10 @@ if(!CC.inited) {
 	document.head.appendChild(CC.inited);
 
 	// CC.init();
-	window._H.defer.add(CC.init);
 }
+
+
+window._H.defer.add(CC.init);
+console.log(
+	'defer add CC.init', _H.defer.funcs
+);

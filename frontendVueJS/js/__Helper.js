@@ -227,9 +227,11 @@ window._H = {
 				}
 			});
 			this.complete = 1;
-			console.log('_H.defer.complete = ' + this.complete);
+			console.log('_H.defer.complete = ' + this.complete,
+			'\nthis.funcs = ', this.funcs);
 		},
-	}
+	},
+
 
 }; // _H
 

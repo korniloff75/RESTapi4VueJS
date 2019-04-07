@@ -12,10 +12,11 @@ $Cache = new Caching;
 $CurrentInMap = $ContentObj->getFromMap();
 
 # Переменные для клиента
-$SV = Caching::toJSON([
+$SV = [
 	'DEV' => \DEV,
 	'DIR' => \H::$Dir,
-]);
+	'ASSETS' => \H::$Dir . '/assets',
+];
 
 # Формируем простой вывод для ПС
 # и первой загрузки SPA
@@ -46,8 +47,11 @@ $0
 $Meta
 $Title
 <link rel=\"stylesheet\" href=\"/templates/core.css\">
-<script>window.sv=$SV</script>
+<!-- Загружаем скрипты для кеширования-->
+<script>window.sv=" . Caching::toJSON($SV) . "</script>
+<script src=\"/" . FRONT_DIR . "/js/polyfills.js\"></script>
 <script src=\"/" . FRONT_DIR . "/js/__Helper.js\"></script>
+<!-- /Загружаем скрипты для кеширования-->
 ", $Response);
 
 # Отдаём для ПС

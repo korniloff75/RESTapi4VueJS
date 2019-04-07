@@ -93,15 +93,13 @@ class ParseContent
 	 */
 	public function getFromMap($url=null)
 	{
+		global $SV;
+
 		$url = \Path::fixSlashes($url ?? $_SERVER['REQUEST_URI']);
 
 		# Define default page
 		if($url === '/') {
 			$this->allInDirFilterIterator->rewind();
-			/* var_dump(
-				$this->allInDirFilterIterator->current()->getPathname(),
-				$this->allInDirFilterIterator->current()->getPath()
-			); */
 
 			while($this->allInDirFilterIterator->current()->getPath() === CONTENT_DIRNAME) {
 				// var_dump($this->allInDirFilterIterator->current()->getPathname());
@@ -162,6 +160,13 @@ class ParseContent
 			if(file_exists($path)) require_once($path);
 		}
 
+		# Подгружаем скрипты из TEMPLATE/js/__defer/
+		$defers = glob(\Path::fromRoot(\BASE_DIR . '/' . TEMPLATE . '/js/__defer/*.js'));
+		// var_dump($defers, \Path::fromRoot(\BASE_DIR . '/' . TEMPLATE . '/js/__defer/*.js'));
+		foreach($defers as $script) {
+			echo "<script src='/$script' defer='defer'></script>";
+		}
+
 		$cur['content'] = ob_get_clean();
 
 		return $cur;
@@ -220,7 +225,6 @@ class ParseContent
 	public function createMenu($map=null, $nav='')
 	:string
 	{
-		// global $nav;
 		$map = $map ?? $this->ContentMap;
 		if(empty($map['children'])) return $nav;
 		// var_dump($map);

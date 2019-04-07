@@ -14,7 +14,7 @@ class Path {
 	public static function fromRoot($path)
 	:string
 	{
-		return str_replace(self::fixSlashes($_SERVER['DOCUMENT_ROOT']) . '/', '', self::fixSlashes($path));
+		return str_ireplace(self::fixSlashes($_SERVER['DOCUMENT_ROOT']) . '/', '', self::fixSlashes($path));
 	}
 
 

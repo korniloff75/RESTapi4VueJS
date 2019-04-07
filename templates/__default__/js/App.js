@@ -15,6 +15,7 @@ Vue.store = {
 	ajax: 0,
 	menu: null,
 	activeItem: null,
+	scriptLinks: []
 };
 
 // Helper 4 Vue
@@ -35,25 +36,45 @@ Vue.H = Vue.H || {
 		if(typeof elem === 'string') {
 			elem = (new DOMParser()).parseFromString(elem, "text/html");
 		}
-		this.scripts = [];
 
-		_H.defer.eval(elem);
+		// Создаём копию оригинального document
+		this.origDoc = document.implementation.createHTMLDocument('orig');
+		this.origDoc.documentElement.innerHTML = elem.documentElement.innerHTML;
+
+		this.scripts = [];
 
 		[].forEach.call(
 		elem.querySelectorAll('script'),
 		i => {
-			if(Vue.store.ajax) this.scripts.push(i);
+			// if(!Vue.store.ajax) return;
+			this.scripts.push(i);
 			i.remove();
 		});
 
 		this.html = elem.documentElement.innerHTML;
 
-		/* console.log(
-			// '\nParseJS.prototype = \n',
-			// this.prototype,
+		console.log(
+			'\nParseJS =====',
+			'\nthis.origDoc = ', this.origDoc,
 			// this.__proto__
-		); */
+		);
 	}, // ParseJS
+
+	/**
+	 *
+	 * @param {Array} scripts
+	 */
+	chainPromises: scripts => scripts.reduce((acc, n) => {
+	  return acc.then(() => new Promise((resolve, reject) => {
+	    const s = document.createElement('script');
+	    s.onload = resolve;
+			s.onerror = reject;
+			s.async = false;
+	    s.src = n.src;
+			document.head.appendChild(s);
+			Vue.store.scriptLinks.push(s);
+	  }));
+	}, Promise.resolve(true)),
 
 
 	// Очищаем глобал перед обновлением
@@ -83,32 +104,44 @@ Vue.H.ParseJS.prototype.eval = function() {
 		return;
 	}
 	// Ссылки на созданные скрипты для их удаления
-	var links = [];
-	this.scripts.forEach(i => {
-		if(i.src) {
-			var s = document.createElement('script');
-			s.src = i.src;
-			document.head.appendChild(s);
-			links.push(s);
-		}
-		else {
-			// https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
-			eval(i.innerHTML);
-		}
+	var loadingScripts = this.scripts.filter(i=>i.src),
+		evalScripts = this.scripts.filter(i=>i.innerHTML);
 
-	});
+	console.log(
+		'loadingScripts = ', loadingScripts,
+		'\nevalScripts = ', evalScripts,
+	);
+
+	Vue.H.chainPromises(loadingScripts)
+		.then(
+			() => {
+				// console.log('Img = ', Img);
+				evalScripts.forEach(i => {
+					var s = document.createElement('script');
+					document.head.appendChild(s);
+					Vue.store.scriptLinks.push(s);
+
+					s.innerHTML = i.innerHTML;
+					if(Vue.store.ajax) eval(i.innerHTML);
+				});
+
+				console.log('defer eval\n', _H.defer.funcs);
+
+				_H.defer.eval(this.origDoc);
+			}
+
+		).catch(
+			e => console.warn(e)
+		)
+
+
 	// debugger;
 	console.log(
 		'Vue.H.ParseJS evaluation!\n',
 		// 'this in eval = ', this
 	);
 
-	delete this.scripts;
-	// debugger;
-
-	Vue.store.scriptLinks = links;
-	return links;
-}
+} // Vue.H.ParseJS.prototype.eval
 
 
 
@@ -169,6 +202,7 @@ var Mixins = {
 Vue.component('menu-items', {
   data () {
     return {
+			store: Vue.store,
 			activeItem: null
     }
 	},
@@ -178,7 +212,7 @@ Vue.component('menu-items', {
 	created() {
 		// Навигация по истории
 		window.onpopstate = e => {
-			// Vue.store.parsedPage = e.state.parsedPage;
+			// Vue.store.activeItem = e.state.activeItemIndex;
 			this.updateContent(e.state.href);
 			document.title = e.state.title;
 			console.log(
@@ -201,35 +235,43 @@ Vue.component('menu-items', {
 				href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
 
 			this.updateContent(href);
+			this.updateActive(li);
 
 			history.pushState({
 				title: document.title,
 				href: href,
+				// activeItem: Vue.store.activeItem,
 				// html: Vue.store.parsedPage.html,
 				// scripts: Vue.store.parsedPage.scripts,
 			}, document.title, hrefAjax);
 
-			Vue.store.activeItem = li;
-			// active && active.classList.remove('active');
-			// li.classList.add('active');
 		},
+
+		updateActive(item) {
+			item = item || this.findActive;
+			var active = this.store.menu.querySelector('li.active');
+
+			active && active.classList.remove('active');
+			this.store.activeItem = item;
+			item.classList.add('active');
+		}
 
 	}, // methods
 
 	computed: {
 		findActive() {
-			var active = null;
+			var active;
 			[...document.querySelectorAll('nav a')].forEach(i=>{
 				if(window.location.pathname === decodeURIComponent(i.getAttribute('data-href'))) active = i.closest('li');
 			});
+
 			return active;
 		}
 	},
 
 	mounted() {
-		Vue.store.menu = this.$el;
-		Vue.store.activeItem = this.findActive;
-		Vue.store.activeItem.classList.add('active');
+		this.store.menu = this.$el;
+		this.updateActive();
 	},
 
 
@@ -246,35 +288,38 @@ var mainContent = Vue.component('main-content',  {
 		}
 	},
 
+
 	beforeUpdate() {
 		console.log(
-			'mainContent\nbeforeUpdate',
-			// '\nVue.store.activeItem = ', Vue.store.activeItem,
+			'mainContent =====\nbeforeUpdate',
+			'\n_H.defer.cleaning',
+
 		);
 
 		// Clean old scripts
-		Vue.store.scriptLinks && Vue.store.scriptLinks.forEach(i=>{
+		Vue.store.scriptLinks.forEach(i=>{
 			i.remove();
 		});
-		var active = Vue.store.menu.querySelector('li.active');
-		active && active.classList.remove('active');
+		_H.defer.clean();
 	},
 
 	updated() {
 		// Работает при каждом обновлении
-		console.log(
-			'\nComponent ' + this.$options._componentTag + ' is updated',
-			'\nVue.store.activeItem = ', Vue.store.activeItem
-		);
-
-		Vue.store.activeItem.classList.add('active');
 
 		// this.$nextTick(Vue.store.parsedPage.eval.bind(Vue.store.parsedPage));
 
 		// Исполняем скрипты
 		// debugger;
 		this.store.parsedPage.eval();
+
+		console.log(
+			'\nComponent ' + this.$options._componentTag + ' is updated',
+			'\nVue.store.activeItem = ', Vue.store.activeItem,
+			'\n_H.defer = ', _H.defer
+		);
+
 	},
+
 
 	// mode="out-in"
 	// mode="in-out"
@@ -295,18 +340,6 @@ var mainContent = Vue.component('main-content',  {
 }); // main-content
 
 
-(function() {
-	// Удаляем JS из содержимого [is=main-content]
-	// до запуска Vue
-	var main = document.querySelector('[is=main-content]');
-
-	Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
-
-	main.innerHTML = '';
-
-})();
-
-
 //
 var vm = new Vue({
 	el: '#app',
@@ -319,6 +352,18 @@ var vm = new Vue({
 
 
 	// Hooks
+	beforeCreate() {
+		// Удаляем JS из содержимого [is=main-content]
+		// до запуска Vue
+		var main = document.querySelector('[is=main-content]');
+
+		Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
+
+		console.log('Vue.store.parsedPage = ', Vue.store.parsedPage.origDoc.scripts);
+
+		main.innerHTML = '';
+	},
+
 	created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
@@ -331,7 +376,7 @@ var vm = new Vue({
 	mounted() {
 		console.log(
 			'\n $root mounted\n',
-			'\n_H.defer = ', _H.defer);
+		);
 
 		// Исполняем скрипты
 		// this.$nextTick(this.store.parsedPage.eval.bind(this.store.parsedPage));

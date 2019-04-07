@@ -41,7 +41,8 @@
 	</main>
 </div> <!-- #app -->
 
-<script src="/<?=TEMPLATE?>/js/__defer/ColorCode.js" defer="defer"></script>
+<!-- Сделана автоподгрузка скриптов из /<?=TEMPLATE?>/js/__defer/
+	<script src="/<?=TEMPLATE?>/js/__defer/ColorCode.js" defer="defer"></script> -->
 <script src="/<?=TEMPLATE?>/js/App.js" defer="defer"></script>
 
 <footer>

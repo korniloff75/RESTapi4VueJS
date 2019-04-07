@@ -49,7 +49,7 @@ class ContentJson extends Api
 	/**
 	 * Метод GET
 	 * Просмотр отдельной записи (по id)
-	 * http://ДОМЕН/ContentJson/1
+	 * http://ДОМЕН/ContentJson/main
 	 * @return string
 	 */
 	public function viewAction()
