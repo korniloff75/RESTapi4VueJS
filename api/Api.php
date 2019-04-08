@@ -83,6 +83,7 @@ abstract class Api
 		$this->headers[] = $header;
 
 		return is_string($data) ? $data : \Caching::toJSON($data);
+		
   }
 
 	private function requestStatus($code)

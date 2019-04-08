@@ -12,8 +12,12 @@ axios.defaults.headers.common = {
 // Common storage
 // Vue.set(vm, 'store', {});
 Vue.store = {
+	start: Date.now(),
 	ajax: 0,
 	menu: null,
+	parsedPage: {
+		html: ''
+	},
 	activeItem: null,
 	scriptLinks: []
 };
@@ -46,7 +50,6 @@ Vue.H = Vue.H || {
 		[].forEach.call(
 		elem.querySelectorAll('script'),
 		i => {
-			// if(!Vue.store.ajax) return;
 			this.scripts.push(i);
 			i.remove();
 		});
@@ -154,9 +157,9 @@ var Mixins = {
 		 * @param {string} url
 		 */
 		updateContent: function(url) {
-			var start = Date.now(),
-				_thisComp = this;
+			var _thisComp = this;
 
+			Vue.store.start = Date.now();
 			console.clear();
 			console.log('\nruning updateContent',
 				// '\n_thisComp = ', _thisComp,
@@ -169,15 +172,21 @@ var Mixins = {
 			})
 			.then(function(response) {
 				Vue.store.ajax = 1;
+				sv && (sv.DIR = response.data.dir);
+				var data = response.data.data;
+
+				// META
+				document.title = data.title;
+				['description', 'keywords'].forEach((i,ind) => {
+					document.head.querySelector(`meta[name=${i}]`).setAttribute('content', data.seo[ind]);
+				})
 
 				// Делим документ на скрипты и html
 				Vue.store.parsedPage = new Vue.H.ParseJS(response.data.body);
 
-				document.title = response.data.data.title;
-
 				Vue.store.parsedPage.html = '<h1>' + document.title + '</h1>\n' + Vue.store.parsedPage.html;
 
-				console.info(`Контент обновился за ${Date.now() - start} мс`);
+				console.info(`Контент обновился за ${Date.now() - Vue.store.start} мс`);
 
 			})
 			.catch(function (error) {
@@ -214,6 +223,7 @@ Vue.component('menu-items', {
 		window.onpopstate = e => {
 			// Vue.store.activeItem = e.state.activeItemIndex;
 			this.updateContent(e.state.href);
+			this.updateActive();
 			document.title = e.state.title;
 			console.log(
 				"\nonpopstate:\n",
@@ -231,7 +241,7 @@ Vue.component('menu-items', {
 
 			var li = t.closest('li'),
 				hrefAjax = decodeURIComponent(t.getAttribute('data-href')),
-				// active = this.$el.querySelector('li.active'),
+
 				href = APIpath + 'api/ContentJson/main/?page=' + hrefAjax;
 
 			this.updateContent(href);
@@ -248,25 +258,28 @@ Vue.component('menu-items', {
 		},
 
 		updateActive(item) {
-			item = item || this.findActive;
+			item = item || this.findActive();
 			var active = this.store.menu.querySelector('li.active');
 
 			active && active.classList.remove('active');
 			this.store.activeItem = item;
 			item.classList.add('active');
+		},
+
+		findActive() {
+			var active;
+			[...document.querySelectorAll('nav a')].some(i=>{
+				if(window.location.pathname === decodeURIComponent(i.getAttribute('data-href'))) active = i.closest('li');
+				return active;
+			});
+
+			return active;
 		}
 
 	}, // methods
 
 	computed: {
-		findActive() {
-			var active;
-			[...document.querySelectorAll('nav a')].forEach(i=>{
-				if(window.location.pathname === decodeURIComponent(i.getAttribute('data-href'))) active = i.closest('li');
-			});
 
-			return active;
-		}
 	},
 
 	mounted() {
@@ -317,11 +330,11 @@ var mainContent = Vue.component('main-content',  {
 			'\nComponent ' + this.$options._componentTag + ' is updated!',
 			'\nVue.store.activeItem = ', Vue.store.activeItem,
 		);
+		console.info(`Страница перерисована за ${Date.now() - Vue.store.start} мс`);
 
 	},
 
 
-	// mode="out-in"
 	// mode="in-out"
 	// :css="false"
 	// @:enter="enter"
@@ -348,31 +361,36 @@ var vm = new Vue({
 		store: Vue.store,
 	},
 
-	// mixins: [Mixins],
-
+	mixins: [Mixins],
 
 	// Hooks
 	beforeCreate() {
 		// Удаляем JS из содержимого [is=main-content]
 		// до запуска Vue
 		var main = document.querySelector('[is=main-content]');
+		main.innerHTML = '';
 
+		/*
 		Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
 
 		console.log(
 			'$root vm beforeCreate ===',
 			'\nVue.store.parsedPage = ', Vue.store.parsedPage.origDoc.scripts);
+ */
 
-		main.innerHTML = '';
 	},
 
 	created () {
 		// Кешируем глобал
 		Vue.H.cache = Vue.H.cache || Object.keys(window);
-		/* console.log(
+		var href = APIpath + 'api/ContentJson/main/?page=' + location.pathname;
+		this.updateContent(href);
+
+		console.log(
 			'\n $root created\n',
 			'\n vm.store.parsedPage  = ',  this.store.parsedPage,
-		); */
+		);
+
 	}, // created
 
 	mounted() {
@@ -382,7 +400,7 @@ var vm = new Vue({
 
 		// Исполняем скрипты
 		// this.$nextTick(this.store.parsedPage.eval.bind(this.store.parsedPage));
-		this.store.parsedPage.eval();
+		// this.store.parsedPage.eval();
 		// debugger;
 
 	},

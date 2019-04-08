@@ -21,6 +21,7 @@ class ContentJson extends Api
 			}), */
 
 			'main' => [
+				'dir' => \H::$Dir,
 				'data' => $currentItem['data'],
 				'body' => $currentItem['content']
 			]
@@ -29,20 +30,17 @@ class ContentJson extends Api
 		// print_r($currentItem);
 
 		parent::__construct($id);
-
-		// print_r($this->dataObj->db);
 	}
 
 	/**
 	 * Метод GET
 	 * Вывод списка всех записей
 	 * http://ДОМЕН/ContentJson
-	 * @return string
 	 */
 	public function indexAction()
 	:string
 	{
-		// print_r($this->dataObj->get());
+		// print_r($this->db);
 		return $this->response( $this->db, 200 );
 	}
 
@@ -50,9 +48,9 @@ class ContentJson extends Api
 	 * Метод GET
 	 * Просмотр отдельной записи (по id)
 	 * http://ДОМЕН/ContentJson/main
-	 * @return string
 	 */
 	public function viewAction()
+	:string
 	{
 		// print_r($this->id . "\n");
 		return $this->id && ($data = $this->db[$this->id])
