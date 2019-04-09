@@ -9,6 +9,10 @@
 	font-family: 'Open Sans';
 }
 
+.field * {
+	transition: none;
+}
+
 .mario {
   width: 30px;
   height: 40px;

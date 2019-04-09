@@ -41,7 +41,10 @@
 
 <div class="center">
 	<div id="prim">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 		<div id="main" class="main"> </div>
+
 		<div>
 			Поле игры:
 			<input type="number" style="width: 53px;" value="15" id="width" class=button /> х
@@ -52,7 +55,7 @@
 		</div>
 
 		<script type="text/javascript">
-			window.GameSnake = function (sts) {
+			var GameSnake = function (sts) {
 				sts = Object.assign({
 					width: 10, height: 10, length: 5, current: 1, dx: 1, dy: 0, x: 0, y: 0, delay: 500, hasFood: false
 				}, sts);
