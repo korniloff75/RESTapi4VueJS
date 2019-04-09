@@ -16,6 +16,7 @@ $SV = [
 	'DEV' => \DEV,
 	'DIR' => \H::$Dir,
 	'ASSETS' => \H::$Dir . '/assets',
+	'COORDS' => [45.47574, 34.21895]
 ];
 
 # Формируем простой вывод для ПС
@@ -41,12 +42,20 @@ if(!empty($CurrentInMap['data']['seo'][1])) {
 # ADD Title
 $Title = "\n<title>{$CurrentInMap['data']['title']}</title>\n";
 
+# Подгружаем стили из шаблона из TEMPLATE/js/__defer/
+$stylesTemplate = glob(\Path::fromRoot(\BASE_DIR . '/' . TEMPLATE . '/css/*.css'));
+$styleTemplate = '';
+foreach($stylesTemplate as $css) {
+	$styleTemplate .= "<link rel=\"stylesheet\" href=\"/$css\"/>\n";
+}
+
 #
 $Response = preg_replace("/<head>/", "
 $0
 $Meta
 $Title
-<link rel=\"stylesheet\" href=\"/templates/core.css\">
+<link rel=\"stylesheet\" href=\"/templates/core.css\"/>
+$styleTemplate
 <!-- Загружаем скрипты для кеширования-->
 <script>window.sv=" . Caching::toJSON($SV) . "</script>
 <script src=\"/" . FRONT_DIR . "/js/polyfills.js\"></script>
@@ -59,6 +68,7 @@ header('Content-type: text/html; charset=utf-8');
 // echo $CurrentInMap['data']['title'];
 echo $Response;
 
+#####
 die(\DEV? \H::profile('base'): null);
 #####
 

@@ -63,6 +63,7 @@ Vue.H = Vue.H || {
 		);
 	}, // ParseJS
 
+
 	/**
 	 *
 	 * @param {Array} scripts
@@ -125,7 +126,8 @@ Vue.H.ParseJS.prototype.eval = function() {
 					Vue.store.scriptLinks.push(s);
 
 					s.innerHTML = i.innerHTML;
-					if(Vue.store.ajax) eval(i.innerHTML);
+					// Исполняются сами
+					// if(Vue.store.ajax) eval(i.innerHTML);
 				});
 
 				console.log('defer eval\n', _H.defer.funcs);
@@ -147,6 +149,23 @@ Vue.H.ParseJS.prototype.eval = function() {
 } // Vue.H.ParseJS.prototype.eval
 
 
+var LogVue = {
+	/* created() {
+		console.log(
+			'\n==Mixins==\nComponent ' + this.$options._componentTag + ' is created',
+		);
+	}, */
+	mounted() {
+		console.log(
+			'\n==Mixins==\nComponent ' + this.$options._componentTag + ' is mounted',
+		);
+	},
+	updated() {
+		console.log(
+			'\n==Mixins==\nComponent ' + this.$options._componentTag + ' is updated',
+		);
+	},
+}
 
 var Mixins = {
 	methods: {
@@ -178,7 +197,8 @@ var Mixins = {
 				// META
 				document.title = data.title;
 				['description', 'keywords'].forEach((i,ind) => {
-					document.head.querySelector(`meta[name=${i}]`).setAttribute('content', data.seo[ind]);
+					var meta = document.head.querySelector(`meta[name=${i}]`);
+					meta && meta.setAttribute('content', data.seo[ind]);
 				})
 
 				// Делим документ на скрипты и html
@@ -189,22 +209,16 @@ var Mixins = {
 				console.info(`Контент обновился за ${Date.now() - Vue.store.start} мс`);
 
 			})
-			.catch(function (error) {
-				console.log(error);
+			.catch(function (e) {
+				console.warn(e);
 			});
 
 		}, // updateContent
 
 	}, // methods
 
-
-	// beforeUpdate
-	updated() {
-		console.log(
-			'\n==Mixins==\nComponent ' + this.$options._componentTag + ' is updated\n',
-		);
-	},
 }; // Mixins
+
 
 
 // Menu
@@ -216,7 +230,7 @@ Vue.component('menu-items', {
     }
 	},
 
-	mixins: [Mixins],
+	mixins: [LogVue, Mixins],
 
 	created() {
 		// Навигация по истории
@@ -225,11 +239,11 @@ Vue.component('menu-items', {
 			this.updateContent(e.state.href);
 			this.updateActive();
 			document.title = e.state.title;
-			console.log(
+			/* console.log(
 				"\nonpopstate:\n",
 				document.location,
 				"\n state: ", e.state,
-			);
+			); */
 		};
 	},
 
@@ -301,14 +315,15 @@ var mainContent = Vue.component('main-content',  {
 		}
 	},
 
+	mixins: [LogVue],
 
 	beforeUpdate() {
-		console.log(
+		/* console.log(
 			'\nComponent ' + this.$options._componentTag + ' =====',
 			'\nbeforeUpdate',
 			'\n_H.defer.cleaning',
 
-		);
+		); */
 
 		// Clean old scripts
 		Vue.store.scriptLinks.forEach(i=>{
@@ -327,10 +342,11 @@ var mainContent = Vue.component('main-content',  {
 		this.store.parsedPage.eval();
 
 		console.log(
-			'\nComponent ' + this.$options._componentTag + ' is updated!',
 			'\nVue.store.activeItem = ', Vue.store.activeItem,
 		);
-		console.info(`Страница перерисована за ${Date.now() - Vue.store.start} мс`);
+		console.info(
+			`Страница перерисована за ${Date.now() - Vue.store.start} мс`
+		);
 
 	},
 
@@ -361,7 +377,7 @@ var vm = new Vue({
 		store: Vue.store,
 	},
 
-	mixins: [Mixins],
+	mixins: [LogVue, Mixins],
 
 	// Hooks
 	beforeCreate() {
@@ -373,10 +389,7 @@ var vm = new Vue({
 		/*
 		Vue.store.parsedPage = new Vue.H.ParseJS(main.innerHTML);
 
-		console.log(
-			'$root vm beforeCreate ===',
-			'\nVue.store.parsedPage = ', Vue.store.parsedPage.origDoc.scripts);
- */
+	 */
 
 	},
 

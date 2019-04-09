@@ -124,7 +124,8 @@ class H {
 			$info = '<p>Page generation - ' . bcsub(microtime(true), self::$tmp['profile']['base'], 5)*1000 . 'ms | Memory usage - now ( '. round (memory_get_usage()/1024) . ') max (' . round (memory_get_peak_usage()/1024) . ') Kbytes</p>';
 
 			unset(self::$tmp{'profile'}[$rem]);
-			return  "<div class='core bar'><b>Technical Info $rem </b>: $info</div>";
+			return  "<div class='core bar'><b>Technical Info $rem </b>. Used <b>PHP-" . phpversion()
+			. "</b>.: $info</div>";
 		}
 
 	}

@@ -1,0 +1,78 @@
+body {
+	background: #f0f0f0;
+	box-sizing: border-box;
+}
+
+body * {
+	box-sizing: border-box;
+}
+
+header {
+	flex: 1 0 100%;
+	align-content: center;
+	justify-content: center;
+	height: 70px;
+}
+
+header h2 {
+	text-align: center;
+	color: blue;
+}
+
+#app {
+	max-width: 100%;
+	display: flex;
+	flex-basis: 100%;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	align-items: stretch;
+}
+
+aside {
+	flex: 1 0 250px;
+	background: #ddd;
+}
+
+main {
+	flex: 10 1 300px;
+	overflow-x: auto;
+	padding: 20px 5px 5px 15px;
+	max-width: 100%;
+}
+main * {
+	max-width: 100%;
+}
+
+
+li {
+	list-style: none;
+}
+li.active {
+	border: 1px solid #008affcc;
+	background: #322ed4b3;
+	color: #eee;
+}
+li.active a {
+	color: #eee;
+	text-decoration: none;
+}
+
+/*  */
+canvas {
+	transition: none;
+}
+
+
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+	header{
+		height: unset;
+	}
+
+/* 	#main {
+		flex-direction: column;
+		flex-wrap: nowrap;
+	} */
+}

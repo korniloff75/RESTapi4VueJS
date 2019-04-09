@@ -55,13 +55,17 @@ var CC= CC || {
 		} // addClick
 
 
-		var codes = CC.doc.querySelectorAll('code' );
+		var codes = CC.doc.querySelectorAll('code' ),
+			codesInDoc = document.querySelectorAll('code' );
+
 		if (!codes.length) return console.warn('codes = ', codes);
-		else [].forEach.call(codes, function(cA) {
+		else [].forEach.call(codes, function(cA, ind) {
 			if(!cA.parentNode) return; //== nE
 
 			var pre = cA.closest('pre');
 			cA.classList.add('http');
+
+			// console.log('pre = ', pre);
 
 			if(!pre) {
 				cA.setAttribute('saldom', 'noLib');
@@ -94,6 +98,9 @@ var CC= CC || {
 			}
 
 			cA.textContent = tmpDiv.innerHTML;
+
+			// var tmp = document.importNode(tmpDiv, true);
+			// codesInDoc[ind].textContent = tmp.innerHTML;
 
 			addClick(cA);
 
@@ -147,7 +154,7 @@ var CC= CC || {
 
 		[...document.querySelectorAll('body pre>code')].forEach((i, ind)=> {
 
-			var newI = document.importNode(virt[ind].parentNode, true);
+			var newI = document.importNode(virt[ind].parentNode.parentNode, true);
 			i.parentNode.parentNode.replaceChild(newI, i.parentNode);
 		});
 

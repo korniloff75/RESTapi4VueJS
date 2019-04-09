@@ -27,12 +27,16 @@
 
 <body>
 
-<header></header>
+<header>
+	<h2>Testing REST-API for VueJS</h2>
+</header>
 
 <div id="app">
-	<nav is="menu-items">
-		<?= $Cache->get('menu.htm', $ContentObj->createMenu())?>
-	</nav>
+	<aside>
+		<nav is="menu-items">
+			<?= $Cache->get('menu.htm', $ContentObj->createMenu())?>
+		</nav>
+	</aside>
 
 	<main is="main-content">
 		<h1><?=$CurrentInMap['data']['title']?></h1>
