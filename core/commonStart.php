@@ -21,7 +21,6 @@ ini_set('date.timezone', "Europe/Moscow");
 
 ini_set(
 	'include_path', get_include_path()
-	. PATH_SEPARATOR . BASE_DIR . '/classes'
 	. PATH_SEPARATOR . BASE_DIR . '/core/classes'
 );
 
@@ -29,7 +28,13 @@ ini_set(
 define('TEMPLATE', 'templates/__default__');
 define('CACHE_DIR', BASE_DIR . '/cache');
 define('FRONT_DIR', 'frontendVueJS');
-define('CONTENT_DIRNAME', $_SERVER['SERVER_PORT'] == 90 ? 'content_my' : 'content');
+
+define('TEST', 0);
+
+// define('CONTENT_DIRNAME', $_SERVER['SERVER_PORT'] == 90 ? 'content_my' : 'content');
+define('CONTENT_DIRNAME', $_SERVER['SERVER_PORT'] == 90 && !TEST ? 'content_my' : 'content');
+// var_dump($_SERVER['SERVER_PORT'] == 90 && !TEST, CONTENT_DIRNAME);
+
 define('CONTENT_DIR', BASE_DIR . '/' . CONTENT_DIRNAME);
 
 if(!file_exists(CONTENT_DIR)) {
@@ -45,8 +50,6 @@ if(!file_exists(CONTENT_DIR)) {
 require_once 'Path.php';
 # Helper singleton
 require_once '_Helper.php';
-# Класс для работы с JSON-базами - DEPRECATED
-require_once 'DbJSON.php';
 # Класс для работы с папкой контента
 require_once 'ParseContent.php';
 # Кэширование

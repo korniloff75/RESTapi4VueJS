@@ -71,9 +71,3 @@ echo $Response;
 #####
 die(\DEV? \H::profile('base'): null);
 #####
-
-echo '<pre>';
-
-echo "\n===============\n";
-
-echo '</pre>';

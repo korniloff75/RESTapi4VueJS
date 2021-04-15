@@ -1,7 +1,8 @@
 <?php
-define('BASE_DIR', '..');
+define('BASE_DIR', ('..'));
 # Настройки display_errors etc.
 require_once BASE_DIR . '/core/commonStart.php';
+// require_once '../core/commonStart.php';
 require_once 'Caching.php';
 
 # Разбираем параметры, разделённые слешем
@@ -15,9 +16,6 @@ if($enterPoint === 'restAPI') $enterPoint = array_shift($requestUri);
 
 $apiName = ucfirst(array_shift($requestUri));
 $id = array_shift($requestUri) ?? null;
-
-$Page = $_REQUEST['page'] ?? null;
-\H::$Dir = dirname(CONTENT_DIRNAME . "/$Page") . '/';
 
 ob_start();
 

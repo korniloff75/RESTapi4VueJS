@@ -71,6 +71,22 @@ class H {
 	}
 
 
+	public static function protectScript(string $fn, $checkAdm = 0)
+
+	{
+		if (preg_match('/' . $fn . '/i', $_SERVER['SCRIPT_NAME'])) self::shead('403');
+
+		if($checkAdm) {
+			if(!\ADMIN) {
+				self::shead('403', '<p class="core warning">Access in ' . $fn . ' Denied!</p>');
+			} else {
+				// success;
+			}
+		}
+
+	}
+
+
 	public static function shead ($s, $o = '')
 
 	{
@@ -102,9 +118,10 @@ class H {
 
 	}
 
-	public static function getPath()
+	public static function realIP ()
+
 	{
-		// return ;
+		return $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 	}
 
 	public static function profile(string $rem='base')

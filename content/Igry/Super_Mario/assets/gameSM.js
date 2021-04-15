@@ -1,6 +1,6 @@
 'use strict';
 
-window.SM= {
+var SM= {
  // Main Settings
  field: document.querySelector(".field"),
  modalStart: document.querySelector(".modal-start"),

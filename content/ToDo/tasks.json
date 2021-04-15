@@ -1,0 +1,24 @@
+{
+	"saveTasks": [
+		{
+			"isActive": true,
+			"editable": 0,
+			"name": "First Task"
+		},
+		{
+			"isActive": false,
+			"editable": 0,
+			"name": "2 Task"
+		},
+		{
+			"isActive": false,
+			"editable": 0,
+			"name": "Третье задание"
+		},
+		{
+			"isActive": 1,
+			"editable": 0,
+			"name": "Что-то сделать надо нам..."
+		}
+	]
+}

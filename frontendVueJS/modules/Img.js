@@ -25,7 +25,7 @@ window.Img= window.Img || {
 	data: [],
 
 	sts: {
-		scriptArea: document.querySelectorAll('body, main, #tplge_mainin, .content')[0],
+		scriptArea: document.querySelector('#tplge_mainin') || document.querySelector('.content'),
 		/*
 		if (imgClass == false) - берутся все изображения из scriptArea.
 		*/
@@ -84,10 +84,8 @@ window.Img= window.Img || {
 			});
 		}
 
-		console.log(
-			'Img inited',
-			'\nImg.data.length = ', Img.data.length
-		);
+
+		console.log('Img.data.length = ', Img.data.length);
 
 		if (!Img.data.length) return;
 
@@ -271,4 +269,3 @@ window.Img= window.Img || {
 //========================================= /
 
 if(Img.init) document.addEventListener('DOMContentLoaded', Img.init.bind(Img));
-_H && _H.defer.add(Img.init.bind(Img));

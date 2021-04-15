@@ -87,11 +87,6 @@ jQuery && !jQuery.fn.e && Object.defineProperties(jQuery.fn,
 
 					// define keyCode
 					e.defKeyCode = function(toc) {
-						/* // e.which keyCode
-						$(window).e.add({keyup: function(e) {
-							console.log(e.ctrlKey);
-						}});
-						*/
 
 						return eO.keyCode && (eO.keyCode === ({
 							esc : 27,
@@ -176,13 +171,14 @@ jQuery && !jQuery.fn.e && Object.defineProperties(jQuery.fn,
 		value: function app(el, pos) {
 
 			// console.log(this[0]);
-			var self = this[0] || this;
+			var self = $.check(this, -1);
 
 			console.assert(!!self, el + ' не имеет ' + self + ' в ' + this + '\nОшибка в Append');
-			if(!self) console.log(this);
+			if(!self) console.info(this);
 
 			switch (pos) {
 				case "after":
+					!self.parentNode ? app.call(self, el) :
 					!!self.nextSibling ? self.parentNode.insertBefore(el, self.nextSibling) : self.parentNode.appendChild(el);
 					break;
 				case "before":
@@ -193,7 +189,12 @@ jQuery && !jQuery.fn.e && Object.defineProperties(jQuery.fn,
 					break;
 				case null:
 				case undefined:
-					self.appendChild(el);
+					if(self.appendChild)
+						self.appendChild(el);
+					else {
+						console.warn('Self hasn\'t method appendChild', self);
+						console.info(self);
+					}
 					break;
 			}
 			return $(el);
@@ -227,14 +228,14 @@ jQuery && !jQuery.fn.e && Object.defineProperties(jQuery.fn,
 
 			if(!f.elements)
 				throw new TypeError('Context of the $().ajaxForm must be a FORM');
-			console.log(f.elements);
+			// console.log(f.elements);
 
 			[].forEach.call(f.elements, function(i) {
 				if(!i.name) return;
 				out[i.name] = i.value.trim();
 			});
 
-			return out;
+			return out; // obj
 		}
 	},
 
@@ -272,6 +273,17 @@ Object.defineProperties(jQuery, {
 		value: Object.create(null),
 		configurable: true,
 		writable: true
+	},
+
+	check : {
+		value: function (obj, direct) {
+			if(!obj) return null;
+			direct = direct || 1;
+			if (direct > 0)
+				return obj instanceof jQuery ? obj : $(obj);
+			else
+				return obj instanceof jQuery ? obj[0] : obj;
+		}
 	},
 
 	cookie: {
@@ -347,15 +359,12 @@ Object.defineProperties(jQuery, {
 
 	rnd: {
 		value: function (arr) {
-
-			if(!arr.length) {
+			if(!(arr instanceof Array)) {
 				arr = Object.values(arr);
 				// console.info('argument is not array');
 			}
-
-			var rnd = Math.floor(Math.random() * arr.length);
-
-			// console.log('rnd = ', rnd, arr);
+			// console.log("arr= ", arr);
+			var rnd = Math.floor(Math.random() * (arr.length-1));
 
 			return arr[rnd];
 		}

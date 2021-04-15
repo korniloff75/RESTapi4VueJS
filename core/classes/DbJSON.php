@@ -9,9 +9,9 @@ class DbJSON {
 
 	public function __construct(string $path=null)
 	{
-		// if(!strlen($path)) throw new LogicException("Отсутствует \$path", 1);
+		if(empty($path)) throw new LogicException("Отсутствует \$path", 1);
 
-		$this->path = (strpos($path, '/') === 0 ? $_SERVER['DOCUMENT_ROOT'] : '') . $path;
+		$this->path = $path;
 		$this->json = @file_get_contents($this->path);
 		$this->db = json_decode($this->json, true) ?? [];
 
@@ -36,15 +36,6 @@ class DbJSON {
 		$this->json = self::toJSON($this->db);
 		file_put_contents($this->path, $this->json, LOCK_EX);
 		return $this;
-	}
-
-	/**
-	 * @data <array>
-	 */
-	public function replace(array $data)
-	{
-		$this->db = $data;
-		return $this->set($data);
 	}
 
 

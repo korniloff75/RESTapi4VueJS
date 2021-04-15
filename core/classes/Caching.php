@@ -3,10 +3,10 @@ class Caching {
 	protected
 		$cacheDir;
 
-	public function __construct()
+	public function __construct($dir = null)
 	{
 		# Create cache folder
-		if(!file_exists($this->cacheDir = CACHE_DIR)) mkdir($this->cacheDir);
+		if(!file_exists($this->cacheDir = $dir ?? CACHE_DIR)) mkdir($this->cacheDir);
 	}
 
 	private function fixPath($path)
@@ -56,9 +56,16 @@ class Caching {
 	}
 
 
-	# Массив в JSON
+	/**
+	 * при кодировании:
+	 * - не преобразует кириллицу,
+	 * - возвращает {} на пустой массив
+	 * - пытается исправить ошибки кодировки
+	 * JSON_PARTIAL_OUTPUT_ON_ERROR
+	 * возвращает строку JSON
+	 */
 	public static function toJSON(array $arr)
 	{
-		return json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+		return json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_FORCE_OBJECT );
 	}
 } // Caching

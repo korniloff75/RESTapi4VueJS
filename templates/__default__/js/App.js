@@ -74,7 +74,8 @@ Vue.H = Vue.H || {
 	    s.onload = resolve;
 			s.onerror = reject;
 			s.async = false;
-	    s.src = n.src;
+			s.src = n.src;
+			// s.defer = h.defer || false;
 			document.head.appendChild(s);
 			Vue.store.scriptLinks.push(s);
 	  }));
@@ -135,7 +136,10 @@ Vue.H.ParseJS.prototype.eval = function() {
 				_H.defer.eval(this.origDoc);
 			}
 
-		).catch(
+		).then(
+			// Сделать запуск defer
+		)
+		.catch(
 			e => console.warn(e)
 		)
 

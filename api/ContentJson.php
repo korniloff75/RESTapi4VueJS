@@ -10,10 +10,12 @@ class ContentJson extends Api
 
 	public function __construct($id = null)
 	{
-		global $Page;
+		$page = $_REQUEST['page'] ?? null;
 
 		$this->contentObj = new \ParseContent();
-		$currentItem = $this->contentObj->getFromMap($Page);
+		$currentItem = $this->contentObj->getFromMap($page);
+		$page = $this->contentObj->getURL($page);
+		// \H::$Dir = dirname(CONTENT_DIRNAME . "/$page") . '/';
 
 		$this->db = [
 			/* 'menu' => $cache->get('menu.htm', function() {

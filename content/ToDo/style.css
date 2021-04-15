@@ -1,0 +1,75 @@
+html, body {
+  height: 100%;
+  padding-top: 10px;
+  background: #e6ecf1;
+}
+
+#app {
+  height: 100%;
+  padding-top: 0px;
+  text-align: center;
+  transition: transform 1s;
+}
+
+#app button {
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+#app .tweet {
+  max-width: 500px;
+  margin: 0 auto;
+  padding-bottom: 15px;
+}
+
+#app .box {
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+#app .content small {
+  color: #00d1b2;
+}
+
+#app img {
+  border-radius: 30px;
+}
+
+#app .level-item {
+  padding-left: 10px;
+  color: #00d1b2;
+}
+
+#app input:focus {
+  border-color: #00d1b2;
+}
+
+#app input {
+  width: 5em;
+  font-weight: bold;
+}
+
+#app input.edit {
+  width: unset;
+}
+
+#app input[type=checkbox] {
+	width: unset;
+	margin-right: 1em;
+}
+
+#app .del {
+  padding: 3px 7px;
+  border-radius: 100%;
+  color: white;
+  background: red;
+}
+
+
+
+#app li {
+	margin: auto;
+	width: 70%;
+	text-align: left;
+	list-style: none;
+}

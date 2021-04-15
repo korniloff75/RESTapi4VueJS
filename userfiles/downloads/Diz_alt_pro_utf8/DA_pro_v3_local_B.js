@@ -13,7 +13,7 @@ window.DizSel = window.DizSel || !!_K && {
 		return '/js/Diz_alt_pro/';
 	},
 	set checkUrl(uri) {
-		Object.defineProperty(this, 'checkUrl', { value: uri});
+		Object.defineProperty(this, 'checkUrl', { value: uri });
 	},
 
 	SlabovidButtonParent: _K.G('$body'),
@@ -34,8 +34,10 @@ window.DizSel = window.DizSel || !!_K && {
 
 		this.altBody = _K.G('#altBody') || this.altObj.cr('div', { id: 'altBody' });
 
-		DizSel.Backup= {
-			altBack: _K.G('$#altObj #mask') || this.altObj.cr('div', {id:'mask'}),
+		console.log(this.addons.db.src);
+
+		DizSel.Backup = {
+			altBack: _K.G('$#altObj #mask') || this.altObj.cr('div', { id: 'mask' }),
 
 			save: function () {
 				DizSel.v.start = new Date();
@@ -43,7 +45,8 @@ window.DizSel = window.DizSel || !!_K && {
 
 				//== Запоминаем размеры
 				DizSel.fns.getNodes(function (i) {
-					i.setAttribute('fsIsh', Math.max(DizSel.sts.fontSize.min, parseInt(getComputedStyle(i).fontSize))) }, this.obj
+					i.setAttribute('fsIsh', Math.max(DizSel.sts.fontSize.min, parseInt(getComputedStyle(i).fontSize)))
+				}, this.obj
 				);
 				[].forEach.call(this.obj.childNodes, function (i) { DizSel.altBody.Clone(i) });
 
@@ -82,8 +85,8 @@ window.DizSel = window.DizSel || !!_K && {
 		/* DizSel.v.speed = new Date().getTime() - DizSel.v.start.getTime(); */
 
 		// callback
-		if(DizSel.callbacks.length) {
-			DizSel.callbacks.forEach(function(fn) {
+		if (DizSel.callbacks.length) {
+			DizSel.callbacks.forEach(function (fn) {
 				fn(DizSel.altBody);
 			})
 		};
@@ -95,12 +98,12 @@ window.DizSel = window.DizSel || !!_K && {
 		DizSel.log.push('Скорость отработки скрипта - ' + DizSel.v.speed + ' мс');
 		// var speedScr = _K.G('#speedScr');
 		// if (speedScr) speedScr.textContent = DizSel.v.speed;
-		if(window.sv && sv.ADMIN) console.info('Diz_alt_pro LOG: \n-------------------------\n' + DizSel.log.join('\n'));
+		if (window.sv && sv.ADMIN) console.info('Diz_alt_pro LOG: \n-------------------------\n' + DizSel.log.join('\n'));
 
 	}, // init
 
 	// HOOK
-	created: function(fn) {
+	created: function (fn) {
 		typeof fn === 'function' && DizSel.callbacks.push(fn)
 	},
 
@@ -112,7 +115,7 @@ window.DizSel = window.DizSel || !!_K && {
 
 	//== Анимация прозрачности ПУ
 	PUopacity: function () {
-		if(DizSel.sts.PUanimate === false) return;
+		if (DizSel.sts.PUanimate === false) return;
 		Object.assign(DizSel.PU.style, {
 			transition: 'none',
 			opacity: getComputedStyle(DizSel.PU).opacity
@@ -161,7 +164,7 @@ window.DizSel = window.DizSel || !!_K && {
 			//== если СТАНДАРТНЫЙ ДИЗАЙН
 		} else if (!DizSel.v.DAlt) {
 			DizSel.altObj.hidden = 1;
-			DizSel.hasOwnProperty('PUanimate') && clearInterval (DizSel.PUanimate);
+			DizSel.hasOwnProperty('PUanimate') && clearInterval(DizSel.PUanimate);
 
 			if (!!_K.G('#puzadpn')) DizSel.SlabovidButton.style.margin = getComputedStyle(_K.G('#puzadpn')).height + ' auto -' + getComputedStyle(_K.G('#puzadpn')).height;
 			if (!!_K.G('#uzadpn')) DizSel.SlabovidButton.style.position = 'relative';
@@ -352,21 +355,21 @@ window.DizSel = window.DizSel || !!_K && {
 
 		// Обрываем события
 		DizSel.altBody.onwheel =
-		DizSel.altBody.onclick =
-		DizSel.altBody.onmouseup =
-		function(e) {
-			_K.e.fix(e).stopPropagation();
-		}
+			DizSel.altBody.onclick =
+			DizSel.altBody.onmouseup =
+			function (e) {
+				_K.e.fix(e).stopPropagation();
+			}
 
 
 		//== Создаем БЛОК КНОПОК СМЕНЫ ФОНА
 
 		// FIX 4 ajax
-		if(this.v.BG) return;
+		if (this.v.BG) return;
 
 		this.v.BG = DizSel.inPU.cr('div', { class: 'no-size flex', style: 'margin: 0 auto; display: flex;' });
 		DizSel.PU_sts = DizSel.PU_sts || DizSel.inPU.cr('div', { hidden: 1 }).cr('div', { class: 'flex', style: 'display: flex;' });
-		if(_K.G('$script[src*=\'DA_pro_v3_B.js\']')) DizSel.version= DizSel.version + '_beta';
+		if (_K.G('$script[src*=\'DA_pro_v3_B.js\']')) DizSel.version = DizSel.version + '_beta';
 		DizSel.v.BG.cr('div', { style: 'position: absolute; right: 0;' }).innerHTML = 'v ' + DizSel.version;
 
 		DizSel.changeCol = DizSel.v.BG.cr('input', { type: 'color', class: 'imgPU', title: 'цвет ТЕКСТА', style: 'width:50px;height:30px;float:left; margin:10px 20px;padding:0;', value: Cook.get('diz_alt_Col') || DizSel.sts.startCol() });
@@ -389,27 +392,29 @@ window.DizSel = window.DizSel || !!_K && {
 
 		//== Создаем кнопки увеличения/уменьшения/кернинга/
 		var elsPU = [
-			{fontSizeS: { ppts: { class: 'sprite-fontBig', title: 'Уменьшить' }, e: function () { DizSel.SaveFS(-DizSel.sts.fontSize.step); }, st: { marginLeft: '20px' } }},
-			{fontSizeB: { ppts: { class: 'sprite-fontBig_50', title: 'Увеличить' }, e: function () { DizSel.SaveFS(DizSel.sts.fontSize.step); } }},
+			{ fontSizeS: { ppts: { class: 'sprite-fontBig', title: 'Уменьшить' }, e: function () { DizSel.SaveFS(-DizSel.sts.fontSize.step); }, st: { marginLeft: '20px' } } },
+			{ fontSizeB: { ppts: { class: 'sprite-fontBig_50', title: 'Увеличить' }, e: function () { DizSel.SaveFS(DizSel.sts.fontSize.step); } } },
 
-			{fontType: { ppts: { class: 'sprite-text', title: 'Тип шрифта' }, e: DizSel.fns.toggleStyle.bind(null, 'fontType'), in_sts: true }},
-			{kern: { ppts: { class: 'sprite-kern', title: 'Изменить интервал' }, e: DizSel.fns.toggleStyle.bind(null, 'kern'), in_sts: true }},
-			{lh: { ppts: { class: 'sprite-kern', title: 'Высота строки' }, e: DizSel.fns.toggleStyle.bind(null, 'lineHeight'), st: { transform: 'rotate(90deg)' }, in_sts: true }},
-			{imageOff: { ppts: { class: 'sprite-imageOff', title: 'Показ изображений', alt: 'Показ изображений' }, e: DizSel.fns.imageOff, in_sts: true }},
-			{sound: { ppts: { class: 'sprite-sound', title: 'Озвучивать выделенный текст', alt: 'Озвучивать выделенный текст' }, e: DizSel.fns.sound }},
-			{sts: {
-				ppts: {
-					class: 'sprite-settings',
-					title: 'Настройки отображения сайта',
-					alt: 'Настройки отображения сайта'
-				},
-				e: function(e) {
-					DizSel.PU_sts.parentNode.hidden = !DizSel.PU_sts.parentNode.hidden;
+			{ fontType: { ppts: { class: 'sprite-text', title: 'Тип шрифта' }, e: DizSel.fns.toggleStyle.bind(null, 'fontType'), in_sts: true } },
+			{ kern: { ppts: { class: 'sprite-kern', title: 'Изменить интервал' }, e: DizSel.fns.toggleStyle.bind(null, 'kern'), in_sts: true } },
+			{ lh: { ppts: { class: 'sprite-kern', title: 'Высота строки' }, e: DizSel.fns.toggleStyle.bind(null, 'lineHeight'), st: { transform: 'rotate(90deg)' }, in_sts: true } },
+			{ imageOff: { ppts: { class: 'sprite-imageOff', title: 'Показ изображений', alt: 'Показ изображений' }, e: DizSel.fns.imageOff, in_sts: true } },
+			{ sound: { ppts: { class: 'sprite-sound', title: 'Озвучивать выделенный текст', alt: 'Озвучивать выделенный текст' }, e: DizSel.fns.sound } },
+			{
+				sts: {
+					ppts: {
+						class: 'sprite-settings',
+						title: 'Настройки отображения сайта',
+						alt: 'Настройки отображения сайта'
+					},
+					e: function (e) {
+						DizSel.PU_sts.parentNode.hidden = !DizSel.PU_sts.parentNode.hidden;
+					}
 				}
-			}},
+			},
 
 			//	fontRes: {ppts: {class:'sprite-reset', title:'Сбросить'}, e:function() { return DizSel.SaveFS('reset') }},
-			{toDefault: { ppts: { class: 'sprite-toDefault', title: 'Обычный вид', id: 'toDefault' }, e: function () { DizSel.addStyleSheet(); }, st: { margin: '3px 20px 0' } }}
+			{ toDefault: { ppts: { class: 'sprite-toDefault', title: 'Обычный вид', id: 'toDefault' }, e: function () { DizSel.addStyleSheet(); }, st: { margin: '3px 20px 0' } } }
 		]; // elsPU
 
 		// _K.l(elsPU);
@@ -442,7 +447,7 @@ window.DizSel = window.DizSel || !!_K && {
 	}, //== /createBGs
 
 
-	prevent: function() {
+	prevent: function () {
 		DizSel.addons.puny = DizSel.checkUrl && _K.G('$head').cr('script', { src: DizSel.checkUrl + 'punycode.js', async: 0 });
 
 		/* if (DizSel.inited) {
@@ -450,16 +455,14 @@ window.DizSel = window.DizSel || !!_K && {
 			return;
 		} */
 
-		DizSel.addons.puny.onload = function() {
+		DizSel.addons.puny.onload = function () {
 			DizSel.addons.db = _K.G('$head').cr('script', { src: DizSel.checkUrl + 'db.js?req=' + _K.fns.rnd(0, 1e5), async: 0 });
-
-			console.log(DizSel.addons.db.src);
 
 			if (/bereghost\.ru/.test(location.host)) DizSel.noFA();
 
 			DizSel.addons.db.e.add({
 				load: DizSel.init.bind(DizSel),
-				error: function(e) {
+				error: function (e) {
 					DizSel.addons.puny = DizSel.checkUrl && _K.G('$head').cr('script', { src: DizSel.checkUrl + 'punycode.js', async: 0 });
 					// console.log(DizSel.addons.db.src);
 					DizSel.addons.db.remove();
@@ -469,7 +472,7 @@ window.DizSel = window.DizSel || !!_K && {
 					// DizSel.init.call(DizSel);
 					DizSel.addons.db.onload = DizSel.init.bind(DizSel);
 				}
-			}) ;
+			});
 		}
 	} // prevent
 

@@ -8,7 +8,8 @@ var CC= CC || {
 
 	parseCode: function(cA) { //== Parser
 		var tags= /(<|&lt;)([^!>]+?)(>|&gt;|[\s!])/g, ops=/\b(document|return|forEach|for|if|else|null|var)\b/g,
-		funcs= /\b(function|querySelector|querySelectorAll|use strict|console\..+?|onreadystatechange)\b/g; // /(<)([^>\s]+)([^>]*?>[\s\S]+)(<\/\2>)/g
+		funcs= /\b(function|querySelector|querySelectorAll|use strict|onreadystatechange)\b/g, // /(<)([^>\s]+)([^>]*?>[\s\S]+)(<\/\2>)/g
+		other = /\b(console\..+?)\b/g;
 
 		// console.log('cA.textContent = ',cA, cA.textContent);
 
@@ -17,6 +18,7 @@ var CC= CC || {
 		//	.replace(/([^\s]+\=)([^\s>]+)/g, "<span class='attrs'>$1$2</span>")
 			.replace(ops, "<span class='ops'>$1</span>")
 			.replace(funcs, "<span class='funcs'>$1</span>")
+			.replace(other, "<span class='other'>$1</span>")
 			.replace(/(([\"])[^\2>]*?\2)/g, "<span class='str'>$1</span>")
 		//	.replace(/=\s*?(\d+)/g, "= <span class='num'>$1</span>")
 			.replace(/(\d+(?:%|px)?)/g, "<span class='num'>$1</span>")

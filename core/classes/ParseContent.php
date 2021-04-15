@@ -7,7 +7,7 @@ class ParseContent
 
 	protected
 		$path,
-		$fileExts = ['htm', 'html'], # allowed extensions
+		$fileExts = ['php', 'htm', 'html'], # allowed extensions
 		$serveDirs = ['assets', 'img'];
 
 	/**
@@ -16,8 +16,6 @@ class ParseContent
 	public function __construct($path=null)
 	{
 		$this->path = $path ?? CONTENT_DIR . "/";
-
-		$this->run();
 
 		# Open map's file
 		$cache = new Caching;
@@ -77,12 +75,12 @@ class ParseContent
 		); // $allInDirFilter
 		// print_r (new RecursiveTreeIterator ($allInDir));
 
-		# Итератор щля отфильтрованный файлов
-		$this->allInDirFilterIterator = new RecursiveIteratorIterator($allInDirFilter);
-		// , RecursiveIteratorIterator::SELF_FIRST
-
 		// print_r("\n===\nallFilterFoldersIterator\n===\n");
 		// var_dump($this->allInDirFilterIterator);
+
+		# Итератор щля отфильтрованный файлов
+		return $this->allInDirFilterIterator = new RecursiveIteratorIterator($allInDirFilter);
+		// , RecursiveIteratorIterator::SELF_FIRST
 
 	} // run
 
@@ -97,21 +95,12 @@ class ParseContent
 
 		$url = \Path::fixSlashes($url ?? $_SERVER['REQUEST_URI']);
 
-		# Define default page
-		if($url === '/') {
-			$this->allInDirFilterIterator->rewind();
+		# Define default | current page
+		$url = $this->getURL($url);
 
-			while($this->allInDirFilterIterator->current()->getPath() === CONTENT_DIRNAME) {
-				// var_dump($this->allInDirFilterIterator->current()->getPathname());
-				$this->allInDirFilterIterator->next();
-			}
+		// var_dump($url);
 
-			$url = $this->allInDirFilterIterator->current()->getPathname();
-			$url = str_replace(CONTENT_DIRNAME, '', $url);
-		}
-
-		$url = \Path::fixSlashes($url);
-		\H::$URI = dirname(trim($url,'\\/'));
+		\H::$URI = dirname(trim($url,'\\/.'));
 		\H::$File = \Path::fromRoot(CONTENT_DIRNAME . '/' . $url);
 
 		\H::$Dir = dirname(\H::$File) . '/';
@@ -170,6 +159,26 @@ class ParseContent
 		$cur['content'] = ob_get_clean();
 
 		return $cur;
+	} // getFromMap
+
+
+	public function getURL($url = null)
+	{
+		if(!empty($url) && $url !== '/') return $url;
+
+		$this->allInDirFilterIterator = $this->allInDirFilterIterator ?? $this->run();
+
+		$this->allInDirFilterIterator->rewind();
+		// var_dump($this->allInDirFilterIterator->current()->getFilename());
+
+		while($this->allInDirFilterIterator->current()->getPath() === CONTENT_DIRNAME) {
+			// var_dump($this->allInDirFilterIterator->current()->getPathname());
+			$this->allInDirFilterIterator->next();
+		}
+
+		$url = $this->allInDirFilterIterator->current()->getPathname();
+		$url = \Path::fixSlashes($url);
+		return str_replace(CONTENT_DIRNAME, '', $url);
 	}
 
 
@@ -177,7 +186,7 @@ class ParseContent
 	public function toArray()
 	:array
 	{
-		$ritit = $this->allInDirFilterIterator;
+		$ritit = $this->run();
 		$out = [];
 		// echo '<pre>';
 
@@ -238,9 +247,15 @@ class ParseContent
 				$path = $child['path'][0];
 
 				$path = urldecode(str_ireplace(CONTENT_DIRNAME . '/', '', $path));
-				// var_dump($path);
 
-				$nav .= "<li><a href=\"/$path\" data-href=\"/$path\" data-json='" . \Caching::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
+				# FIX array in title
+				if(isset($data['title']) && is_array($data['title'])) {
+					$data['title'] = $data['title'][0];
+					// var_dump($data['title'] ?? basename(dirname($path)));
+				}
+
+
+				$nav .= "<li><a href=\"/{@$path}\" data-href=\"/$path\" data-json='" . \Caching::toJSON($data) . "'>" . ($data['title'] ?? basename(dirname($path))) . "</a></li>\n";
 			}
 
 			if(!empty($child['children'])) {

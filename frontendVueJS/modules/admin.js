@@ -1,15 +1,13 @@
 'use strict';
 var _A = {
-	v: {
-
-	},
+	v: {},
 
 	setFormat : function (cmd, par, val, e) {
 		val = val || (par ? encodeURI(prompt ("Введите " + par)) : null);
 		e.preventDefault();
 		// console.log(arguments);
 		//developer.mozilla.org/ru/docs/Web/API/Document/execCommand
-		// this.focus ();
+
 		document.execCommand (cmd, false, val);
 		return false;
 	},
@@ -116,14 +114,14 @@ var _A = {
 			action : 'save'
 		})
 		.done(function(response) {
-			// console.log(this.response);
+			console.log(response);
 
-			_H.popup({fields : {
-				'empty' : {
+			_H.popup({
+				'server' : {
 					tag: 'div',
 					html: response,
 				}
-			}});
+			});
 
 			if(typeof opts.cb === 'function') opts.cb();
 			// Чистим кеш

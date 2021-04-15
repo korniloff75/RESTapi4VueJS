@@ -1,0 +1,87 @@
+<h3>Production files</h3>
+<p><a href="/<?=H::$Dir?>style.css" target="_blank">style.css</a></p>
+<p><a href="/<?=H::$Dir?>play-arrow.svg" target="_blank">play-arrow.svg</a></p>
+<p><a href="/<?=H::$Dir?>Брайан-Трейси-Достижение-максимума_-ключ-к-личному-и-бизнес-успеху.jpg" target="_blank">Изображение с обрезанным фоном</a></p>
+<p><a href="/<?=H::$Dir?>Rotator.js" target="_blank">Rotator.js</a></p>
+
+<!-- <h3>Development</h3>
+<p><a href="/<?=H::$Dir?>Rotator_dev.js" target="_blank">Rotator_dev.js</a></p> -->
+
+<hr>
+<h2>DEMO</h2>
+
+<div id="prim">
+	<div id="rotator">
+		<!-- !!! Изменить путь на реальный !!! -->
+		<link rel="stylesheet" href="/<?=H::$Dir?>style.css">
+
+		<div id="vmodal" class="vbutton">
+			<div class="attach" style="background: linear-gradient(#29303b00, #29303b00, #29303B), url(//i.udemycdn.com/course/240x135/1901422_8f67_3.jpg);">
+				<div class="play-arrow"></div>
+				<p class="intro"></p>
+			</div>
+		</div>
+
+		<div id="vmodal_2" class="vbutton">
+			<div class="attach" style="background-image: linear-gradient(#29303b00, #29303b00, #29303B), url(/<?=H::$Dir?>Брайан-Трейси-Достижение-максимума_-ключ-к-личному-и-бизнес-успеху.jpg);">
+				<div class="play-arrow"></div>
+				<p class="intro"></p>
+			</div>
+		</div>
+
+		<h4>Или даже так:</h4>
+		<div id="vmodal_3" class="vbutton">
+			<div class="attach" style="background-image: linear-gradient(#29303b00, #29303b00, #29303B), url(/<?=H::$Dir?>Брайан-Трейси-Достижение-максимума_-ключ-к-личному-и-бизнес-успеху.jpg); background-size: auto 120%;">
+				<div class="play-arrow"></div>
+				<p class="intro"></p>
+			</div>
+		</div>
+
+		<div class="modal_" hidden>
+			<div class="modal_-backdrop fade in"></div>
+			<div class="modal_-content">
+				<button class="close">X</button>
+				<div class="video">
+					<!-- <iframe frameborder="0"></iframe> -->
+				</div>
+				<p style="text-align:center;"><a id="curLink" href="" target="_blank">Ссылка на видео</a></p>
+				<div class="items">
+
+				</div>
+			</div>
+
+		</div>
+
+		<script>
+		// Тут база для пунктов ротатора
+		// {id кнопки : Object base, ...}
+		window.Rotator = {
+			vmodal: {
+				'name1': 'https://mega.nz/embed#!GfJDBSgJ!uMxn0AfibMgRQccv6eKFBUPI6X3mpNq41-npZhBGYas',
+				'name2': 'https://mega.nz/embed#!KSxBkQpC!57uRuCkhwF-5biabIuPj4f1fZixFjaSTc_4ibnDg7j8',
+				'name3': 'https://mega.nz/embed#!rfRVFILB!HjRhvvcBoa-O37ZURJetSCTGEfSrYgBT75pdyeH4pRE',
+				'Ценные хвосты': 'https://yastatic.net/yandex-video-player-iframe-api-bundles/1.0-573/index.html?post_message_config=true&stream_url=https%3A%2F%2Fstreaming.disk.yandex.net%2Fhls%2FU2FsdGVkX1-TwoPQ9uRHBjihLJ_svY5ATMzQgu2gqXZY3SrPs4yftryhz9VJsl9m5K_qZ1N1u68F-_l8asQyzWFXlfId0gErfz7wpSroaWaQM9I-MiUu__SA5xKHBtYf5YE9rUOeXQRiy888oAGi3RxN1P0Tndmnhy4eXiKc5a9fQJo7w5795P_8IgqWgP0QhTTMrtEuWSJX7CQ4ol7r5iCZSUyUw48zp9ppvzkmQpfj2_qow_9i53gtJ73w9kL_MNC1A8UGtpntZiNaTq2u3_PJsysYnjmWa56iiriP9y97jCLHsZ354-NIQpvwATCz%2F58ad3167a59f8%2F124a8745ff3c8cb7399a89427ff5846729d64747f976cb7087f0ddd832361f55%2Fmaster-playlist.m3u8&volume=100&muted=false&auto_quality=false&report=false&report_url=https%3A%2F%2Fyandex.ru%2Fsupport%2Fteletranslation%2Fform.html&preview=https%3A%2F%2Fdownloader.disk.yandex.ru%2Fpreview%2F49c39b12d489841324b398115f4089d74c95c7bbb085f42a77a05fc26953e29e%2F5cfad3d7%2F3cldig7mkm40AA3UazncQJAvHW3fiLQTLurFX6xHZrq3btn3n74_ARUJdNpb0cnJWqsLh6xHHe3j4d_bbbHhGg%253D%253D%3Fuid%3D0%26filename%3D2019-05-11%252015-49-50.MP4%26disposition%3Dinline%26hash%3D%26limit%3D0%26content_type%3Dimage%252Fjpeg%26tknv%3Dv2%26size%3D1144x644&host=yadi.sk&additional_params=%7B%22from%22%3A%22other%22%2C%22vsid%22%3A%2299a4349b8d0c4e2db4abe1eed31aecb0028db179dd79827992e09c931ea1aa3a%22%7D&vsid=99a4349b8d0c4e2db4abe1eed31aecb0028db179dd79827992e09c931ea1aa3a',
+				'Очень ценные хвосты': 'https://yastatic.net/yandex-video-player-iframe-api-bundles/1.0-573/index.html?post_message_config=true&stream_url=https%3A%2F%2Fstreaming.disk.yandex.net%2Fhls%2FU2FsdGVkX19cqxHNrbJt5PPD1dFSbOSNR8wQN2cs6C3KgKftYXa88S_bXVh-HsaReo3FmR2Ib36oAkPjJpx_wWU3itKLnZUJzyweFYSOnvrMMD_U_tksdtPYqOD-1ZHh2r9iahQPatP6udExoDI0Dpu5EYfDnB-_vOWua6waaClR7GUZITDFuwPUlWCVVPoGrLLTj7YQ6WR6Fa8BjyobjRxUCtZNeWToTAHGt4xXE0iex_9sxxcJz9uDdW6LpEMrtS4zR3xnvaiZNHetsg_tImArA6x1cHKX0Gp2Iswv1Ko%2F58ad2f138e808%2F79196fc66fec2423eea5f032701c9a88c5bc012d60b8e6f282509b3f43ac4114%2Fmaster-playlist.m3u8&volume=100&muted=false&auto_quality=false&report=false&report_url=https%3A%2F%2Fyandex.ru%2Fsupport%2Fteletranslation%2Fform.html&preview=https%3A%2F%2Fdownloader.disk.yandex.ru%2Fpreview%2Ff8fda6ab49526880b42a25afc11414f27199caa0bffc4703541527d4f3bc81ff%2F5cfad166%2FCJwujYpufCKOgDkHyqOQJCfnqIBDkV3Dan8wj7JZXFXSYIvN6SYDj4pqvrUen_RKo536tNVpYEkF93e79r_AhQ%253D%253D%3Fuid%3D0%26filename%3D2019-05-13%252013-05-17.MP4%26disposition%3Dinline%26hash%3D%26limit%3D0%26content_type%3Dimage%252Fjpeg%26tknv%3Dv2%26size%3D1144x644&host=yadi.sk&additional_params=%7B%22from%22%3A%22other%22%2C%22vsid%22%3A%229b70808db0447c78b1b15a6e8a71fedbe8b1cd4cd4b7ea96b5c8e0e6e5600659%22%7D&vsid=9b70808db0447c78b1b15a6e8a71fedbe8b1cd4cd4b7ea96b5c8e0e6e5600659',
+			},
+
+			vmodal_2: {
+				'name6': 'https://mega.nz/embed#!GfJDBSgJ!uMxn0AfibMgRQccv6eKFBUPI6X3mpNq41-npZhBGYas',
+				'name7': 'https://mega.nz/embed#!KSxBkQpC!57uRuCkhwF-5biabIuPj4f1fZixFjaSTc_4ibnDg7j8',
+				'name8': 'https://mega.nz/embed#!rfRVFILB!HjRhvvcBoa-O37ZURJetSCTGEfSrYgBT75pdyeH4pRE',
+			},
+			vmodal_3: {
+				'name9': 'https://mega.nz/embed#!GfJDBSgJ!uMxn0AfibMgRQccv6eKFBUPI6X3mpNq41-npZhBGYas',
+			},
+		};
+		</script>
+
+		<!-- !!! Изменить путь на реальный !!! -->
+		<script defer="defer" type="text/javascript" src="/<?=H::$Dir?>Rotator<?=$_SERVER['SERVER_PORT'] == 90 ? '_dev' : ''?>.js"></script>
+	</div>
+
+</div>
+
+<hr>
+
+<h4>HTML + Javascript код:</h4>
+<pre><code for="#prim" data-lib="native ES-6"></code></pre>
